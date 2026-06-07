@@ -1,159 +1,138 @@
 # Repository Instructions for Codex
 
-## Project overview
+## Authoritative Instructions
 
-This repository implements a minimal force-aware tool-use planning project for learning and research practice. The goal is to build a clean, reproducible demo that connects robot kinematics, IK planning, torque feasibility, simplified force control, and eventually fixture-aware task-and-motion planning.
+The current repository scope is Phase 1 only.
 
-The project starts with a 3-link planar arm and a tool-use task. Given a tool-tip path and a desired external force/wrench, the planner should search over grasp transforms and IK branches to find a smooth joint path. A baseline planner considers only IK and joint limits. A force-aware planner also checks torque feasibility using:
+For every Phase 1 implementation, review, or documentation task:
 
+1. Use `.agents/skills/force-aware-tool-use/SKILL.md`.
+2. Read `.agents/skills/force-aware-tool-use/PHASE1_INSTRUCTIONS.md` before making changes.
+3. Treat `PHASE1_INSTRUCTIONS.md` as the detailed source of truth.
+4. If this file, README, existing code comments, or older documentation conflict
+   with the skill or Phase 1 instructions, follow the skill and Phase 1
+   instructions.
+
+All repository commands must use `python3`, never `python`.
+
+## Project Overview
+
+This repository implements a minimal force-aware tool-use planning demo for
+learning and research practice.
+
+The central idea is that a geometrically feasible robot motion may still be
+physically infeasible when the required planar wrench exceeds joint torque
+limits:
+
+```text
 tau = J(q).T @ F
+```
 
-The project may later extend toward simple simulation execution, force control, ROS2 integration, and fixture-aware strategy planning.
+Phase 1 compares:
 
-## Research motivation
+- a baseline planner using IK, joint limits, and smoothness;
+- a force-aware planner that also filters candidates by torque limits.
 
-The central idea is that geometric motion feasibility is not enough for forceful tool use. A robot may be able to reach every waypoint, but the required wrench may cause joint torque violations or unstable contacts. Planning should therefore reason about motion and force constraints together.
+The deterministic demo must show that the baseline finds a geometric path that
+violates torque limits while the force-aware planner finds a torque-feasible
+alternative.
 
-This repository is inspired by force-and-motion constrained tool-use planning and multi-stage forceful manipulation with fixturing. The implementation should remain intentionally minimal at first so that the core planning ideas are clear.
+## Strict Phase 1 Scope
 
-## Development priorities
+Implement only the Phase 1 planar planning demo unless the user explicitly
+requests otherwise.
 
-1. Build a reliable 2D/2.5D force-aware planning demo before attempting full 3D.
-2. Make the baseline vs force-aware comparison visually obvious.
-3. Keep code modular, deterministic, and easy to test.
-4. Prioritize clear plots and reproducible scripts over complex physics.
-5. Add ROS2 or contact simulation only after the planning core works.
+Do not add ROS2, Gazebo, MoveIt, PyBullet, hardware execution, physical contact
+simulation, force control, impedance control, fixture-aware planning,
+PDDLStream, full TAMP, 3D kinematics, 6D wrench planning, dynamics, gravity
+compensation, perception, reinforcement learning, or learned grasping.
 
-## Recommended milestones
+Future-phase notes are acceptable in documentation, but Phase 1 code must not
+depend on future-phase functionality.
 
-### Milestone 1: Force-aware path planner
+## Existing Code
 
-Implement:
-- 3-link planar arm forward kinematics.
-- Planar Jacobian.
-- Multiple IK candidate generation for each end-effector waypoint.
-- Several grasp transforms from tool frame to end-effector frame.
-- Tool-tip path generation.
-- Tool-tip path to end-effector path conversion.
-- Torque computation using tau = J(q).T @ F.
-- IK candidate filtering using joint limits and torque limits.
-- Dynamic programming or graph search to select the smoothest IK sequence.
-- Baseline planner using IK and joint limits only.
-- Force-aware planner using IK, joint limits, and torque feasibility.
-- Plots saved to media/figures/.
+Preserve and extend the working mathematical foundation:
 
-### Milestone 2: Simple execution
+```text
+src/force_tool_planning/kinematics.py
+src/force_tool_planning/jacobian.py
+src/force_tool_planning/torque.py
+```
 
-Implement:
-- Simple position-controlled execution of q_des(t).
-- A PD controller.
-- No contact simulation required in the first version.
+Do not rewrite working code unnecessarily. Preserve existing tests and add
+focused tests for new behavior.
 
-### Milestone 3: Simplified force control
+The existing `wrap_to_pi()` implementation is authoritative. Reuse or re-export
+it instead of creating a divergent implementation.
 
-Implement:
-- Quasi-static force-aware control:
-  tau_cmd = J(q).T @ F_des + Kp * (q_des - q) + Kd * (qdot_des - qdot)
-- Optional gravity compensation only if a dynamics model is added.
+## Frame Convention
 
-### Milestone 4: Fixture-aware minimal TAMP
+Use planar poses `[x, y, theta]` in meters and radians.
 
-Implement:
-- A small enumerative strategy planner over:
-  - whether to use a tool
-  - which grasp to use
-  - which fixture to use
-  - which IK path to use
-  - which force-control parameter to use
-- Three planning levels:
-  - Level 1: geometry-only planning
-  - Level 2: torque-aware planning
-  - Level 3: fixture-aware and robustness-aware planning
-- Fixture choices may include table_friction, clamp, and weight.
-- Robustness may be estimated by perturbing friction coefficient, contact location, normal force, or applied force.
+Use the detailed frame convention from `PHASE1_INSTRUCTIONS.md`:
 
-## Expected figures
+```text
+world_T_ee = world_T_tool ⊕ tool_T_ee
+```
 
-The project should eventually generate:
-- tool-tip path
-- transformed end-effector path
-- IK candidates per waypoint
-- rejected IK candidates due to torque limits
-- selected baseline path
-- selected force-aware path
-- robot configurations along selected path
-- joint torques over the path with torque-limit lines
-- planner comparison table or plot
-- optional fixture robustness plot
+For Phase 1, the tool-tip frame and tool frame may be treated as the same frame
+only when this simplification is documented explicitly:
 
-## Repository structure
+```text
+world_T_tooltip ≈ world_T_tool
+```
 
-Prefer this structure:
+If a separate tool-tip offset is added later, represent it explicitly:
 
-src/
-  force_tool_planning/
-    __init__.py
-    kinematics.py
-    jacobian.py
-    ik.py
-    torque.py
-    planner.py
-    grasps.py
-    fixtures.py
-    visualization.py
+```text
+world_T_ee = world_T_tooltip ⊕ tooltip_T_tool ⊕ tool_T_ee
+```
 
-scripts/
-  run_phase1_planner.py
-  run_baseline_vs_force_aware.py
-  run_fixture_planner.py
+Every transform function must document transform direction.
 
-configs/
-  demo_planar_arm.yaml
+## Development Rules
 
-tests/
-  test_kinematics.py
-  test_jacobian.py
-  test_torque_filter.py
-  test_planner.py
-
-docs/
-  project_plan.md
-  research_notes.md
-
-media/
-  figures/
-
-## Coding standards
-
-- Use Python for the first version.
-- Use NumPy, SciPy, Matplotlib, PyYAML, and pytest.
+- Use Python, NumPy, Matplotlib, PyYAML, and pytest. Use SciPy only if needed.
+- Prefer deterministic analytic 3-link IK for the main demo.
 - Use type hints for public functions.
 - Use dataclasses for structured objects.
 - Keep mathematical functions deterministic and easy to test.
 - Avoid hidden global state.
-- Use clear names for frames and units.
-- Document frame conventions in docstrings.
-- Every script should be runnable from the repository root.
-- Save generated figures under media/figures/.
-- Do not add ROS2 dependencies during Phase 1.
-- Do not add heavy dependencies unless explicitly requested.
-- Do not implement full contact dynamics unless explicitly requested.
+- Use clear frame and unit names.
+- Preserve rejected candidates and structured diagnostics.
+- Make scripts runnable from the repository root.
+- Save generated figures under `media/figures/`.
+- Do not add heavy dependencies.
 
-## Testing
+## Required Verification
 
 After changing math or planning code, run:
 
-pytest
+```bash
+python3 -m pytest -q
+```
 
-After changing plotting scripts, run the relevant script and verify that figures are generated.
+After changing plotting or demo scripts, run the relevant scripts:
 
-If dependencies change, update requirements.txt.
+```bash
+python3 scripts/run_phase1_planner.py
+python3 scripts/run_baseline_vs_force_aware.py
+```
 
-## Communication style for code changes
+Verify that generated figures are saved under `media/figures/`.
 
-When making changes, summarize:
-- what was implemented
-- which files changed
-- how to run it
-- what tests were run
-- any known limitations
+If dependencies change, update `requirements.txt`.
+
+## Communication Style for Code Changes
+
+When making code changes, summarize:
+
+- what was implemented;
+- which files changed;
+- how to run it using `python3`;
+- what tests were run;
+- where figures were saved;
+- any known limitations.
+
+Keep summaries concrete and concise.

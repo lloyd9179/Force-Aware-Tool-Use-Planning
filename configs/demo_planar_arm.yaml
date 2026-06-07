@@ -1,0 +1,30 @@
+# These deterministic values produce the intended Phase 1 comparison:
+# the baseline selects a smoother torque-infeasible path, while the force-aware
+# planner selects a different grasp whose complete path stays within limits.
+arm:
+  link_lengths_m: [1.0, 1.0, 0.7]
+  joint_limits_rad:
+    - [-3.141592653589793, 3.141592653589793]
+    - [-2.6179938779914944, 2.6179938779914944]
+    - [-2.6179938779914944, 2.6179938779914944]
+  torque_limits_nm: [18.0, 12.0, 8.0]
+
+task:
+  name: horizontal_cutting
+  num_waypoints: 20
+  start_pose: [1.2, 0.6, 0.0]
+  length_m: 0.5
+  desired_wrench: [0.0, -10.0, 0.0]
+
+grasps:
+  - name: short_inline
+    tool_T_ee: [-0.20, 0.00, 0.00]
+  - name: long_inline
+    tool_T_ee: [-0.60, 0.00, 0.00]
+  - name: angled_up
+    tool_T_ee: [-0.40, 0.00, 0.60]
+  - name: angled_down
+    tool_T_ee: [-0.40, 0.00, -0.60]
+
+output:
+  figures_dir: media/figures
