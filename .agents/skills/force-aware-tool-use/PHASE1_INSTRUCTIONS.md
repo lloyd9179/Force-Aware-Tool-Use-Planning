@@ -969,21 +969,20 @@ Phase 1 is complete only when all of the following are true:
 
 ## 12. README update requirements
 
-When updating `README.md`, include:
+Keep `README.md` concise and reader-facing. It should include:
 
 - Project title.
 - Core idea.
 - Relation to force-aware tool-use planning.
-- Current status.
-- Phase 1 scope.
 - Installation instructions.
 - Test command.
 - Demo command.
 - Expected output.
 - Generated figures.
-- Repository structure.
 - Limitations.
-- Future phases.
+
+Maintain implementation status, completion checklists, repository structure,
+and future phases in `docs/PROJECT_STATUS.md` instead of expanding the README.
 
 Do not write that the project is for joining a lab. The README should describe the project as a learning-oriented research demo.
 

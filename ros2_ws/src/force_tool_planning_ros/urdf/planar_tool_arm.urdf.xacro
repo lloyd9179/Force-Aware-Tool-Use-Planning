@@ -1,0 +1,155 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="planar_tool_arm">
+  <!-- Keep these dimensions aligned with configs/demo_planar_arm.yaml. -->
+  <xacro:property name="link1_length" value="1.0"/>
+  <xacro:property name="link2_length" value="1.0"/>
+  <xacro:property name="link3_length" value="0.7"/>
+  <xacro:property name="link_width" value="0.10"/>
+  <xacro:property name="link_height" value="0.08"/>
+  <xacro:property name="joint_radius" value="0.075"/>
+  <xacro:property name="joint_height" value="0.12"/>
+  <!-- Inverse of the selected force-aware short_inline tool_T_ee [-0.20, 0, 0]. -->
+  <xacro:property name="ee_to_tool_x" value="0.20"/>
+  <xacro:property name="tool_body_length" value="0.20"/>
+
+  <material name="base_blue">
+    <color rgba="0.12 0.35 0.65 1.0"/>
+  </material>
+  <material name="link_blue">
+    <color rgba="0.20 0.50 0.80 1.0"/>
+  </material>
+  <material name="joint_gray">
+    <color rgba="0.35 0.38 0.42 1.0"/>
+  </material>
+  <material name="ee_yellow">
+    <color rgba="0.95 0.70 0.10 1.0"/>
+  </material>
+  <material name="tool_orange">
+    <color rgba="0.95 0.35 0.08 1.0"/>
+  </material>
+  <material name="tool_tip_red">
+    <color rgba="0.90 0.08 0.08 1.0"/>
+  </material>
+
+  <xacro:macro name="planar_link" params="name length">
+    <link name="${name}">
+      <visual>
+        <origin xyz="${length / 2.0} 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="${length} ${link_width} ${link_height}"/>
+        </geometry>
+        <material name="link_blue"/>
+      </visual>
+      <collision>
+        <origin xyz="${length / 2.0} 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="${length} ${link_width} ${link_height}"/>
+        </geometry>
+      </collision>
+    </link>
+  </xacro:macro>
+
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.12" length="${joint_height}"/>
+      </geometry>
+      <material name="base_blue"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.12" length="${joint_height}"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <xacro:planar_link name="link1" length="${link1_length}"/>
+  <xacro:planar_link name="link2" length="${link2_length}"/>
+  <xacro:planar_link name="link3" length="${link3_length}"/>
+
+  <link name="ee_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius="${joint_radius}"/>
+      </geometry>
+      <material name="ee_yellow"/>
+    </visual>
+  </link>
+
+  <link name="tool_link">
+    <visual>
+      <!-- The tool frame is the Phase 1 tool/tool-tip pose. The body extends
+           backward from that frame toward the end effector. -->
+      <origin xyz="${-tool_body_length / 2.0} 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${tool_body_length} 0.06 0.05"/>
+      </geometry>
+      <material name="tool_orange"/>
+    </visual>
+    <collision>
+      <origin xyz="${-tool_body_length / 2.0} 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${tool_body_length} 0.06 0.05"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="tool_tip_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius="0.045"/>
+      </geometry>
+      <material name="tool_tip_red"/>
+    </visual>
+  </link>
+
+  <joint name="joint1" type="revolute">
+    <parent link="base_link"/>
+    <child link="link1"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-3.141592653589793" upper="3.141592653589793"
+           effort="18.0" velocity="2.0"/>
+  </joint>
+
+  <joint name="joint2" type="revolute">
+    <parent link="link1"/>
+    <child link="link2"/>
+    <origin xyz="${link1_length} 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-2.6179938779914944" upper="2.6179938779914944"
+           effort="12.0" velocity="2.0"/>
+  </joint>
+
+  <joint name="joint3" type="revolute">
+    <parent link="link2"/>
+    <child link="link3"/>
+    <origin xyz="${link2_length} 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-2.6179938779914944" upper="2.6179938779914944"
+           effort="8.0" velocity="2.0"/>
+  </joint>
+
+  <joint name="ee_fixed_joint" type="fixed">
+    <parent link="link3"/>
+    <child link="ee_link"/>
+    <origin xyz="${link3_length} 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="tool_fixed_joint" type="fixed">
+    <parent link="ee_link"/>
+    <child link="tool_link"/>
+    <origin xyz="${ee_to_tool_x} 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Phase 1 explicitly treats the tool frame and tool-tip frame as equal. -->
+  <joint name="tool_tip_fixed_joint" type="fixed">
+    <parent link="tool_link"/>
+    <child link="tool_tip_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+</robot>

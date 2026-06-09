@@ -1,19 +1,21 @@
 ---
 name: force-aware-tool-use
-description: Use this skill when implementing, reviewing, debugging, or extending Phase 1 of this repository's force-aware robot tool-use planning demo, including planar transforms, deterministic 3-link IK, grasp candidates, torque feasibility using tau = J(q).T @ F, dynamic programming, visualization, configuration, and baseline vs force-aware comparison.
+description: Use this skill when implementing, reviewing, debugging, or extending this repository's force-aware robot tool-use planning demo, including the Phase 1 planar planner and the Phase 2 ROS2/RViz/ros2_control integration.
 ---
 
 # Force-Aware Tool-Use Planning Skill
 
-## Source Of Truth
+## Sources Of Truth
 
-Before implementing or reviewing Phase 1 work, read
-`PHASE1_INSTRUCTIONS.md` in this skill directory.
+Before implementing or reviewing work, read the instruction file for the
+relevant phase:
 
-Treat `PHASE1_INSTRUCTIONS.md` as the detailed source of truth. This skill
-defines when and how to apply that document. If summaries in `AGENTS.md`,
-`README.md`, code comments, or older documentation conflict with the Phase 1
-instructions, follow `PHASE1_INSTRUCTIONS.md`.
+- Phase 1 planning work: `PHASE1_INSTRUCTIONS.md`
+- Phase 2 ROS2 integration work: `PHASE2_INSTRUCTIONS.md`
+
+Treat the relevant phase instruction file as the detailed source of truth. If
+Phase 2 touches Phase 1 code, both files apply and Phase 1 behavior must remain
+unchanged.
 
 All repository commands must use `python3`, never `python`.
 
@@ -36,18 +38,23 @@ The core feasibility equation is:
 tau = J(q).T @ F
 ```
 
+Phase 2 presents and executes the existing result through ROS2, RViz, and
+ros2_control mock hardware. It must not duplicate or replace Phase 1 planning.
+
 ## Required Workflow
 
-1. Read `PHASE1_INSTRUCTIONS.md`.
+1. Read the instruction file for the active phase.
 2. Inspect the current repository before editing.
 3. Preserve the existing kinematics, Jacobian, torque APIs, and tests unless a
    change is necessary.
-4. Implement the smallest next part of the required Phase 1 pipeline.
+4. Implement the smallest next part of the active phase pipeline.
 5. Preserve structured diagnostics and rejected candidates.
 6. Add or update focused tests.
 7. Run the required `python3` verification commands.
-8. Update README when installation, commands, behavior, status, or generated
-   figures change.
+8. Keep README concise and update it when public installation, usage, behavior,
+   or selected result figures change.
+9. Record implementation status, checklists, repository structure, and roadmap
+   changes in `docs/PROJECT_STATUS.md`.
 
 ## Phase 1 Pipeline
 
@@ -74,11 +81,11 @@ APIs from older summaries.
 
 ## Strict Scope
 
-Implement Phase 1 only unless the user explicitly requests later-phase work.
+Implement only the active phase and preserve the completed Phase 1 planner.
 
 Do not add:
 
-- ROS2, Gazebo, MoveIt, or PyBullet;
+- Gazebo, MoveIt, or PyBullet;
 - physical simulation or hardware execution;
 - force or impedance control;
 - fixture-aware planning, PDDLStream, or full TAMP;
@@ -89,6 +96,10 @@ Do not add:
 Phase 1 grasps are simplified planar rigid transforms. The wrench is a
 simplified planar task wrench. Do not claim that Phase 1 performs physical
 contact simulation or real force control.
+
+Phase 2 may use ROS2, RViz, robot_state_publisher, and ros2_control mock
+hardware for position trajectory execution. Do not claim that this validates
+the desired wrench physically or performs force control.
 
 ## Engineering Rules
 

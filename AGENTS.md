@@ -2,7 +2,8 @@
 
 ## Authoritative Instructions
 
-The current repository scope is Phase 1 only.
+The repository contains a completed Phase 1 planner and an incremental Phase 2
+ROS2/RViz/ros2_control integration.
 
 For every Phase 1 implementation, review, or documentation task:
 
@@ -12,6 +13,16 @@ For every Phase 1 implementation, review, or documentation task:
 4. If this file, README, existing code comments, or older documentation conflict
    with the skill or Phase 1 instructions, follow the skill and Phase 1
    instructions.
+
+For every Phase 2 implementation, review, or documentation task:
+
+1. Use `.agents/skills/force-aware-tool-use/SKILL.md`.
+2. Read `.agents/skills/force-aware-tool-use/PHASE2_INSTRUCTIONS.md` before
+   making changes.
+3. Treat `PHASE2_INSTRUCTIONS.md` as the detailed source of truth for ROS2,
+   RViz, and ros2_control integration.
+4. Preserve the completed Phase 1 behavior and follow
+   `PHASE1_INSTRUCTIONS.md` for any Phase 1 code touched by Phase 2 work.
 
 All repository commands must use `python3`, never `python`.
 
@@ -37,18 +48,19 @@ The deterministic demo must show that the baseline finds a geometric path that
 violates torque limits while the force-aware planner finds a torque-feasible
 alternative.
 
-## Strict Phase 1 Scope
+## Phase Scope
 
-Implement only the Phase 1 planar planning demo unless the user explicitly
-requests otherwise.
+Phase 1 is complete and remains the source of truth for planning. Phase 2 may
+add ROS2, RViz, robot_state_publisher, and ros2_control mock-hardware trajectory
+execution under `ros2_ws/`.
 
-Do not add ROS2, Gazebo, MoveIt, PyBullet, hardware execution, physical contact
+Do not add Gazebo, MoveIt, PyBullet, real hardware execution, physical contact
 simulation, force control, impedance control, fixture-aware planning,
-PDDLStream, full TAMP, 3D kinematics, 6D wrench planning, dynamics, gravity
+PDDLStream, full TAMP, 3D planning, 6D wrench planning, dynamics, gravity
 compensation, perception, reinforcement learning, or learned grasping.
 
-Future-phase notes are acceptable in documentation, but Phase 1 code must not
-depend on future-phase functionality.
+Phase 1 code must not depend on ROS2. Phase 2 must consume Phase 1 results
+without duplicating planner mathematics.
 
 ## Existing Code
 
@@ -104,6 +116,9 @@ Every transform function must document transform direction.
 - Make scripts runnable from the repository root.
 - Save generated figures under `media/figures/`.
 - Do not add heavy dependencies.
+- Keep `README.md` concise and reader-facing.
+- Record implementation status, checklists, repository structure, and roadmap
+  changes in `docs/PROJECT_STATUS.md`.
 
 ## Required Verification
 
@@ -121,6 +136,14 @@ python3 scripts/run_baseline_vs_force_aware.py
 ```
 
 Verify that generated figures are saved under `media/figures/`.
+
+After changing Phase 2 package files, source ROS2 Humble and build the package:
+
+```bash
+source /opt/ros/humble/setup.bash
+cd ros2_ws
+colcon build --packages-select force_tool_planning_ros
+```
 
 If dependencies change, update `requirements.txt`.
 
