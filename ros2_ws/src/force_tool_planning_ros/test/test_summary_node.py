@@ -18,3 +18,19 @@ def test_summary_explains_selected_paths_and_execution_choice() -> None:
     assert "Baseline violation waypoints: [0, 1, 2" in summary
     assert "Force-aware: grasp=short_inline, torque_feasible=yes" in summary
     assert "Execution selection: force-aware path only" in summary
+
+
+def test_summary_can_label_baseline_visual_comparison() -> None:
+    result = load_phase1_result_data(DEFAULT_CONFIG)
+
+    summary = "\n".join(
+        format_result_summary(
+            result,
+            "baseline comparison; torque-infeasible visualization only",
+        )
+    )
+
+    assert (
+        "Execution selection: baseline comparison; "
+        "torque-infeasible visualization only"
+    ) in summary

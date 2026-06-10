@@ -95,7 +95,9 @@ For Phase 2:
 
 The main force-aware execution path is `PlanningResult.path_q` with shape
 `(N, 3)`. Do not send the torque-infeasible baseline path to the controller in
-the final demo.
+the default final demo. A separate, clearly labeled baseline comparison launch
+may execute it through mock hardware only to visualize the difference; it must
+state that the path violates the Phase 1 torque model.
 
 ## 5. Target Package Structure
 
@@ -145,14 +147,14 @@ small and verify it before starting the next one.
 - [x] 19. Add markers to RViz and verify the visual comparison.
 - [x] 20. Add the ros2_control mock-hardware Xacro block.
 - [x] 21. Add controller configuration.
-- [ ] 22. Add control-only launch.
-- [ ] 23. Verify controllers activate and publish joint states.
-- [ ] 24. Add the force-aware JointTrajectory conversion helper.
-- [ ] 25. Test joint names, positions, points, and timestamps.
-- [ ] 26. Add the FollowJointTrajectory sender node.
-- [ ] 27. Add a controlled move to the first planned waypoint.
-- [ ] 28. Verify successful force-aware controller execution.
-- [ ] 29. Add the complete Phase 2 launch file.
+- [x] 22. Add control-only launch.
+- [x] 23. Verify controllers activate and publish joint states.
+- [x] 24. Add the force-aware JointTrajectory conversion helper.
+- [x] 25. Test joint names, positions, points, and timestamps.
+- [x] 26. Add the FollowJointTrajectory sender node.
+- [x] 27. Add a controlled move to the first planned waypoint.
+- [x] 28. Verify successful force-aware controller execution.
+- [x] 29. Add the complete Phase 2 launch file.
 - [ ] 30. Polish markers, labels, camera, and timing.
 - [ ] 31. Complete Phase 2 README and usage documentation.
 - [ ] 32. Run final Phase 1 and Phase 2 verification.
@@ -162,8 +164,8 @@ Current status:
 
 ```text
 Phase 1: complete and verified
-Phase 2: steps 1-21 complete
-ROS2 package: buildable display-only demo
+Phase 2: steps 1-29 complete
+ROS2 package: buildable display-only, control-only, and complete demos
 Robot model: planar arm, force-aware short_inline tool, and tool tip implemented
 Display: deterministic joint motion and RViz launch verified
 Planning bridge: deterministic Phase 1 result adapter implemented and tested
@@ -171,8 +173,16 @@ Summary node and deterministic diagnostic marker helpers: implemented
 Retained diagnostic markers: published and displayed in RViz
 Position-only ros2_control mock-hardware description: implemented and tested
 Joint-state broadcaster and position trajectory controller config: implemented
-Control-only launch and controller activation: not implemented
-Package license metadata: TODO until a repository license is selected
+Control-only launch: implemented
+Controller activation and joint-state publication: verified
+Force-aware position JointTrajectory conversion helper: implemented and tested
+FollowJointTrajectory sender with controlled first-waypoint move: implemented
+Force-aware mock-controller execution: verified through the final waypoint
+Complete Phase 2 launch: implemented
+Baseline mock-execution comparison launch: implemented
+Force-aware and baseline complete motions: each repeats twice, then stops
+Executable and launch-file guide: documented
+Repository and ROS package license: MIT
 ```
 
 ## 7. Verification

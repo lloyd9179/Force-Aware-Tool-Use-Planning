@@ -39,7 +39,7 @@ setup(
         "ROS2 visualization and mock-control integration for force-aware "
         "tool-use planning."
     ),
-    license="TODO",
+    license="MIT",
     tests_require=["pytest"],
     entry_points={
         "console_scripts": [
@@ -49,6 +49,8 @@ setup(
             "force_tool_planning_ros.summary_node:main",
             "marker_publisher_node = "
             "force_tool_planning_ros.marker_publisher_node:main",
+            "trajectory_sender_node = "
+            "force_tool_planning_ros.trajectory_sender_node:main",
         ],
     },
 )

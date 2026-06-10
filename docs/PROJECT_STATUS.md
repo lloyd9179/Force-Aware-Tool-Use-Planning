@@ -86,11 +86,28 @@ Completed:
   actuated arm joints.
 - [x] Joint-state broadcaster and position JointTrajectoryController
   configuration added and checked against the mock-hardware interfaces.
+- [x] Control-only launch added for robot_state_publisher, ros2_control mock
+  hardware, and the two required controller spawners.
+- [x] Joint-state broadcaster and force-aware trajectory controller activation
+  verified; the broadcaster publishes all three arm joints on `/joint_states`.
+- [x] Force-aware selected joint path converts to a deterministic position-only
+  `JointTrajectory` with tested joint names, positions, point count, and
+  strictly increasing timestamps.
+- [x] One-shot `FollowJointTrajectory` sender added; it completes a controlled
+  move to the first force-aware waypoint before sending the selected path.
+- [x] Mock-controller execution verified through the final selected force-aware
+  waypoint while both required controllers remained active.
+- [x] Complete Phase 2 launch added for summary, diagnostics, RViz, mock
+  control, controller activation, and ordered force-aware execution.
+- [x] Separate baseline comparison launch added with the baseline grasp and
+  explicit torque-infeasible visualization labeling.
+- [x] Both complete execution demos repeat the entire selected motion twice,
+  waiting for each full motion to stop before starting the next run.
+- [x] Executable, support-module, and launch-file responsibilities documented.
 
 Remaining major milestones:
 
-- [ ] ros2_control mock hardware and trajectory execution.
-- [ ] Full demo launch and captured RViz media.
+- [ ] Polish the complete demo and capture RViz media.
 
 Detailed small-step plan and live checklist:
 

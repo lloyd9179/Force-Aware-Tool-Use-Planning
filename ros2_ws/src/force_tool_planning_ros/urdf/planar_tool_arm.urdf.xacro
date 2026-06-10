@@ -8,9 +8,15 @@
   <xacro:property name="link_height" value="0.08"/>
   <xacro:property name="joint_radius" value="0.075"/>
   <xacro:property name="joint_height" value="0.12"/>
-  <!-- Inverse of the selected force-aware short_inline tool_T_ee [-0.20, 0, 0]. -->
-  <xacro:property name="ee_to_tool_x" value="0.20"/>
-  <xacro:property name="tool_body_length" value="0.20"/>
+  <!-- Defaults are the inverse of force-aware short_inline tool_T_ee. -->
+  <xacro:arg name="ee_to_tool_x" default="0.20"/>
+  <xacro:arg name="ee_to_tool_y" default="0.0"/>
+  <xacro:arg name="ee_to_tool_yaw" default="0.0"/>
+  <xacro:arg name="tool_body_length" default="0.20"/>
+  <xacro:property name="ee_to_tool_x" value="$(arg ee_to_tool_x)"/>
+  <xacro:property name="ee_to_tool_y" value="$(arg ee_to_tool_y)"/>
+  <xacro:property name="ee_to_tool_yaw" value="$(arg ee_to_tool_yaw)"/>
+  <xacro:property name="tool_body_length" value="$(arg tool_body_length)"/>
 
   <material name="base_blue">
     <color rgba="0.12 0.35 0.65 1.0"/>
@@ -143,7 +149,8 @@
   <joint name="tool_fixed_joint" type="fixed">
     <parent link="ee_link"/>
     <child link="tool_link"/>
-    <origin xyz="${ee_to_tool_x} 0 0" rpy="0 0 0"/>
+    <origin xyz="${ee_to_tool_x} ${ee_to_tool_y} 0"
+            rpy="0 0 ${ee_to_tool_yaw}"/>
   </joint>
 
   <!-- Phase 1 explicitly treats the tool frame and tool-tip frame as equal. -->

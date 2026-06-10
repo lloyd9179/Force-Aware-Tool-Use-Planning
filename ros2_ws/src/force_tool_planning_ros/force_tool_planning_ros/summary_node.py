@@ -14,7 +14,10 @@ from force_tool_planning_ros.result_adapter import (
 )
 
 
-def format_result_summary(result: Phase1ResultData) -> tuple[str, ...]:
+def format_result_summary(
+    result: Phase1ResultData,
+    execution_selection: str = "force-aware path only",
+) -> tuple[str, ...]:
     """Return concise terminal lines describing the selected Phase 1 paths."""
 
     baseline_feasible = "yes" if result.baseline.torque_feasible else "no"
@@ -42,7 +45,7 @@ def format_result_summary(result: Phase1ResultData) -> tuple[str, ...]:
             f"torque_feasible={force_aware_feasible}, "
             f"max_torque_ratio={result.force_aware.max_torque_ratio:.6f}"
         ),
-        "Execution selection: force-aware path only",
+        f"Execution selection: {execution_selection}",
     )
 
 
@@ -61,13 +64,19 @@ class ResultSummaryNode(Node):
     def __init__(self) -> None:
         super().__init__("baseline_vs_force_aware_summary")
         self.declare_parameter("config_path", str(default_config_path()))
+        self.declare_parameter("execution_selection", "force-aware path only")
         config_path = Path(
             self.get_parameter("config_path")
             .get_parameter_value()
             .string_value
         )
         result = load_phase1_result_data(config_path)
-        for line in format_result_summary(result):
+        execution_selection = (
+            self.get_parameter("execution_selection")
+            .get_parameter_value()
+            .string_value
+        )
+        for line in format_result_summary(result, execution_selection):
             self.get_logger().info(line)
 
 

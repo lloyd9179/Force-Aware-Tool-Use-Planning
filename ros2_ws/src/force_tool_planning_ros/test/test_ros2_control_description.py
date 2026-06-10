@@ -8,11 +8,11 @@ PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 XACRO_PATH = PACKAGE_ROOT / "urdf" / "planar_tool_arm.urdf.xacro"
 
 
-def generated_robot() -> ET.Element:
+def generated_robot(*xacro_args: str) -> ET.Element:
     """Generate and parse the planar arm URDF."""
 
     completed = subprocess.run(
-        ["xacro", str(XACRO_PATH)],
+        ["xacro", str(XACRO_PATH), *xacro_args],
         check=True,
         capture_output=True,
         text=True,
@@ -60,3 +60,19 @@ def test_mock_hardware_exposes_only_actuated_joint_positions() -> None:
         assert joint.findtext(
             "state_interface/param[@name='initial_value']"
         ) == "0.0"
+
+
+def test_tool_attachment_can_match_baseline_comparison_grasp() -> None:
+    robot = generated_robot(
+        "ee_to_tool_x:=0.33013424596387136",
+        "ee_to_tool_y:=0.22585698935801415",
+        "ee_to_tool_yaw:=0.6",
+        "tool_body_length:=0.40",
+    )
+    origin = robot.find("joint[@name='tool_fixed_joint']/origin")
+
+    assert origin is not None
+    assert origin.attrib["xyz"] == (
+        "0.33013424596387136 0.22585698935801415 0"
+    )
+    assert origin.attrib["rpy"] == "0 0 0.6"
