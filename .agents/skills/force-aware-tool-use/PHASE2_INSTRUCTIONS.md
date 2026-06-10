@@ -135,16 +135,16 @@ small and verify it before starting the next one.
 - [x] 9. Add display-only launch.
 - [x] 10. Add the initial top-down RViz configuration.
 - [x] 11. Verify display-only arm motion and tool attachment.
-- [ ] 12. Define the Phase 1-to-ROS result data contract.
-- [ ] 13. Implement the Phase 1 result adapter.
-- [ ] 14. Test result shapes, grasps, feasibility, and violation waypoints.
-- [ ] 15. Add the baseline-versus-force-aware summary node.
-- [ ] 16. Add deterministic marker-construction helpers.
-- [ ] 17. Test marker IDs, frames, types, colors, and point counts.
-- [ ] 18. Add the marker publisher node.
-- [ ] 19. Add markers to RViz and verify the visual comparison.
-- [ ] 20. Add the ros2_control mock-hardware Xacro block.
-- [ ] 21. Add controller configuration.
+- [x] 12. Define the Phase 1-to-ROS result data contract.
+- [x] 13. Implement the Phase 1 result adapter.
+- [x] 14. Test result shapes, grasps, feasibility, and violation waypoints.
+- [x] 15. Add the baseline-versus-force-aware summary node.
+- [x] 16. Add deterministic marker-construction helpers.
+- [x] 17. Test marker IDs, frames, types, colors, and point counts.
+- [x] 18. Add the marker publisher node.
+- [x] 19. Add markers to RViz and verify the visual comparison.
+- [x] 20. Add the ros2_control mock-hardware Xacro block.
+- [x] 21. Add controller configuration.
 - [ ] 22. Add control-only launch.
 - [ ] 23. Verify controllers activate and publish joint states.
 - [ ] 24. Add the force-aware JointTrajectory conversion helper.
@@ -162,11 +162,16 @@ Current status:
 
 ```text
 Phase 1: complete and verified
-Phase 2: steps 1-11 complete
+Phase 2: steps 1-21 complete
 ROS2 package: buildable display-only demo
 Robot model: planar arm, force-aware short_inline tool, and tool tip implemented
 Display: deterministic joint motion and RViz launch verified
-Planning bridge, diagnostic markers, and controllers: not implemented
+Planning bridge: deterministic Phase 1 result adapter implemented and tested
+Summary node and deterministic diagnostic marker helpers: implemented
+Retained diagnostic markers: published and displayed in RViz
+Position-only ros2_control mock-hardware description: implemented and tested
+Joint-state broadcaster and position trajectory controller config: implemented
+Control-only launch and controller activation: not implemented
 Package license metadata: TODO until a repository license is selected
 ```
 

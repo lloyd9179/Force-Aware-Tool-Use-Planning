@@ -152,4 +152,30 @@
     <child link="tool_tip_link"/>
     <origin xyz="0 0 0" rpy="0 0 0"/>
   </joint>
+
+  <!-- Position-only mock hardware for later ros2_control trajectory execution. -->
+  <ros2_control name="PlanarToolArmSystem" type="system">
+    <hardware>
+      <plugin>mock_components/GenericSystem</plugin>
+      <param name="state_following_offset">0.0</param>
+    </hardware>
+    <joint name="joint1">
+      <command_interface name="position"/>
+      <state_interface name="position">
+        <param name="initial_value">0.0</param>
+      </state_interface>
+    </joint>
+    <joint name="joint2">
+      <command_interface name="position"/>
+      <state_interface name="position">
+        <param name="initial_value">0.0</param>
+      </state_interface>
+    </joint>
+    <joint name="joint3">
+      <command_interface name="position"/>
+      <state_interface name="position">
+        <param name="initial_value">0.0</param>
+      </state_interface>
+    </joint>
+  </ros2_control>
 </robot>

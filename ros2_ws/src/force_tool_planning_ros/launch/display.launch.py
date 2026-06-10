@@ -32,6 +32,11 @@ def generate_launch_description() -> LaunchDescription:
                 output="screen",
             ),
             Node(
+                package="force_tool_planning_ros",
+                executable="marker_publisher_node",
+                output="screen",
+            ),
+            Node(
                 package="rviz2",
                 executable="rviz2",
                 arguments=["-d", rviz_config],

@@ -70,10 +70,25 @@ Completed:
 - [x] Deterministic display joint-state node added and tested.
 - [x] Display-only launch and initial RViz configuration added.
 - [x] Moving arm and attached tool verified through RViz, joint states, and TF.
+- [x] Phase 1-to-ROS result data contract and deterministic adapter added.
+- [x] Result shapes, selected grasps, torque feasibility, and baseline violation
+  waypoint derivation tested.
+- [x] Existing Phase 1 Python package installed with the ROS package so the
+  adapter works from the sourced workspace.
+- [x] Baseline-versus-force-aware ROS summary node added.
+- [x] Deterministic desired-path, baseline-path, violation, and force-aware-path
+  marker construction helpers added.
+- [x] Diagnostic marker IDs, frames, types, colors, and point counts tested.
+- [x] Reliable transient-local diagnostic MarkerArray publisher added.
+- [x] Display launch starts the marker publisher and RViz shows the desired
+  tool path, baseline path, baseline violations, and force-aware path.
+- [x] Position-only ros2_control mock-hardware Xacro block added for the three
+  actuated arm joints.
+- [x] Joint-state broadcaster and position JointTrajectoryController
+  configuration added and checked against the mock-hardware interfaces.
 
 Remaining major milestones:
 
-- [ ] Phase 1 result adapter and diagnostic markers.
 - [ ] ros2_control mock hardware and trajectory execution.
 - [ ] Full demo launch and captured RViz media.
 

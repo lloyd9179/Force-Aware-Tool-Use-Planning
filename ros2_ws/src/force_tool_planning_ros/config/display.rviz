@@ -23,6 +23,20 @@ Visualization Manager:
       Enabled: true
       Name: RobotModel
       Visual Enabled: true
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Name: Planning Diagnostics
+      Namespaces:
+        baseline_ee_path: true
+        baseline_torque_violations: true
+        desired_tool_path: true
+        force_aware_ee_path: true
+      Topic:
+        Depth: 1
+        Durability Policy: Transient Local
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /force_tool_planning/diagnostic_markers
     - Class: rviz_default_plugins/TF
       Enabled: true
       Frame Timeout: 15
@@ -46,7 +60,7 @@ Visualization Manager:
       Distance: 4.5
       Focal Point:
         X: 1.2
-        Y: 0.0
+        Y: 0.6
         Z: 0.0
       Name: Current View
       Pitch: 1.45
