@@ -55,7 +55,7 @@ Detailed source of truth:
 
 ### Phase 2: ROS2, RViz, and ros2_control Demo
 
-Status: in progress.
+Status: complete.
 
 Completed:
 
@@ -104,10 +104,19 @@ Completed:
 - [x] Both complete execution demos repeat the entire selected motion twice,
   waiting for each full motion to stop before starting the next run.
 - [x] Executable, support-module, and launch-file responsibilities documented.
+- [x] Planning-diagnostic labels, inclined RViz recording camera, and execution
+  timing polished and documented.
+- [x] Final force-aware and baseline comparison GIFs saved under
+  `media/figures/` and displayed together in the README.
+- [x] Final verification completed: `58` Phase 1 tests and `34` ROS2 package
+  tests passed with no failures; both complete demos were verified live.
 
-Remaining major milestones:
+Final Phase 2 media:
 
-- [ ] Polish the complete demo and capture RViz media.
+```text
+media/figures/baseline.gif
+media/figures/forcecontrol.gif
+```
 
 Detailed small-step plan and live checklist:
 
@@ -121,7 +130,7 @@ Detailed small-step plan and live checklist:
 Force-Aware-Tool-Use-Planning/
 ├── configs/                    # Deterministic planner scenario
 ├── docs/                       # Status and project documentation
-├── media/figures/              # Generated Phase 1 figures
+├── media/figures/              # Phase 1 figures and Phase 2 GIFs
 ├── scripts/                    # Runnable Phase 1 demos
 ├── src/force_tool_planning/    # Pure Python planning package
 ├── tests/                      # Phase 1 tests

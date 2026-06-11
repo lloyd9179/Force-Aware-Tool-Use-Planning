@@ -155,16 +155,16 @@ small and verify it before starting the next one.
 - [x] 27. Add a controlled move to the first planned waypoint.
 - [x] 28. Verify successful force-aware controller execution.
 - [x] 29. Add the complete Phase 2 launch file.
-- [ ] 30. Polish markers, labels, camera, and timing.
-- [ ] 31. Complete Phase 2 README and usage documentation.
-- [ ] 32. Run final Phase 1 and Phase 2 verification.
-- [ ] 33. Save an RViz screenshot and optionally a short video.
+- [x] 30. Polish markers, labels, camera, and timing.
+- [x] 31. Complete Phase 2 README and usage documentation.
+- [x] 32. Run final Phase 1 and Phase 2 verification.
+- [x] 33. Save an RViz screenshot and optionally a short video.
 
 Current status:
 
 ```text
 Phase 1: complete and verified
-Phase 2: steps 1-29 complete
+Phase 2: complete; steps 1-33 verified
 ROS2 package: buildable display-only, control-only, and complete demos
 Robot model: planar arm, force-aware short_inline tool, and tool tip implemented
 Display: deterministic joint motion and RViz launch verified
@@ -182,6 +182,9 @@ Complete Phase 2 launch: implemented
 Baseline mock-execution comparison launch: implemented
 Force-aware and baseline complete motions: each repeats twice, then stops
 Executable and launch-file guide: documented
+Final inclined RViz camera and planning-diagnostic explanation: documented
+Final verification: 58 Phase 1 tests and 34 ROS2 package tests passed
+Captured comparison media: media/figures/baseline.gif and forcecontrol.gif
 Repository and ROS package license: MIT
 ```
 
@@ -226,7 +229,8 @@ Phase 2 is complete only when:
 8. Terminal output clearly explains the baseline and force-aware results.
 9. README documents public setup, execution, expected output, and limitations;
    `docs/PROJECT_STATUS.md` records implementation status and roadmap.
-10. At least one Phase 2 RViz screenshot is saved under `media/images/`.
+10. At least one Phase 2 RViz screenshot, GIF, or video is saved under
+    `media/images/` or `media/figures/`.
 11. No out-of-scope physics, control, planning, or hardware dependencies are
     added.
 

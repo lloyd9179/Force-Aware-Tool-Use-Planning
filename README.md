@@ -1,7 +1,7 @@
 # Force-Aware Tool-Use Planning
 
-A deterministic robotics planning demo showing why geometric reachability alone
-is insufficient for tool-use tasks.
+Geometry-only planning can find a reachable path, but the required task wrench may exceed joint torque limits.
+This repo demonstrates a minimal force-aware planner that avoids geometrically valid but physically infeasible tool-use motions.
 
 A robot configuration may follow a desired tool path while requiring joint
 torques beyond the robot's limits. This project compares a geometric baseline
@@ -46,6 +46,21 @@ valid path with a maximum torque ratio of `1.314`, exceeding a joint limit. The
 force-aware planner selects a different grasp and remains feasible with a
 maximum torque ratio of `0.875`.
 
+<table>
+  <tr>
+    <th>Geometric Baseline: Torque-Infeasible</th>
+    <th>Force-Aware: Torque-Feasible</th>
+  </tr>
+  <tr>
+    <td><img src="media/figures/baseline.gif"
+             alt="Torque-infeasible geometric baseline execution"
+             width="100%"></td>
+    <td><img src="media/figures/forcecontrol.gif"
+             alt="Torque-feasible force-aware execution"
+             width="100%"></td>
+  </tr>
+</table>
+
 <p align="center">
   <img src="media/figures/baseline_vs_force_aware_paths.png"
        alt="Baseline and force-aware selected arm paths"
@@ -55,7 +70,7 @@ maximum torque ratio of `0.875`.
 <p align="center">
   <img src="media/figures/torque_profiles.png"
        alt="Baseline and force-aware joint torque profiles"
-       width="75%">
+       width="55%">
 </p>
 
 ## Capabilities
@@ -101,19 +116,20 @@ The default scenario is defined in
 
 ## ROS2 Package
 
-Phase 2 uses ROS2 Humble in a separate workspace so the planning package remains
-independent of ROS2:
+Phase 2 is complete and uses ROS2 Humble in a separate workspace so the
+planning package remains independent of ROS2:
 
 ```bash
 source /opt/ros/humble/setup.bash
 cd ros2_ws
 colcon build --packages-select force_tool_planning_ros
 source install/setup.bash
-ros2 launch force_tool_planning_ros display.launch.py
+ros2 launch force_tool_planning_ros phase2.launch.py
 ```
 
-To verify the mock hardware and activate both ros2_control controllers without
-opening RViz:
+The diagnostic launches below remain available for isolated visualization or
+controller checks. To verify mock hardware and activate both ros2_control
+controllers without opening RViz:
 
 ```bash
 ros2 launch force_tool_planning_ros control.launch.py
@@ -148,6 +164,10 @@ ros2 launch force_tool_planning_ros baseline_demo.launch.py
 
 The baseline demo also runs twice, but it is explicitly a mock-hardware visual
 comparison of a path known to violate the Phase 1 torque limits.
+
+Final verification completed with `58` Phase 1 tests and `34` ROS2 package
+tests passing with no failures. Both complete demos were also verified live
+through their final selected joint waypoints.
 
 ### How to Read the RViz Display
 

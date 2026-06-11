@@ -39,3 +39,13 @@ def test_rviz_subscribes_to_retained_diagnostic_markers() -> None:
         "desired_tool_path": True,
         "force_aware_ee_path": True,
     }
+
+
+def test_rviz_uses_slightly_inclined_top_down_recording_view() -> None:
+    config = yaml.safe_load(DISPLAY_RVIZ.read_text(encoding="utf-8"))
+    view = config["Visualization Manager"]["Views"]["Current"]
+
+    assert view["Class"] == "rviz_default_plugins/Orbit"
+    assert view["Target Frame"] == "base_link"
+    assert view["Pitch"] == 1.32
+    assert view["Yaw"] == 0.20
