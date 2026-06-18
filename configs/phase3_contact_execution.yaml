@@ -1,0 +1,61 @@
+# Phase 3 contact-constrained execution demo configuration.
+# The arm, torque limits, and grasp definitions come from the Phase 1 scenario
+# unless a future implementation explicitly adds a narrow override.
+
+demo:
+  name: phase3_contact_constrained_execution
+  description: Compare position-only and force-aware execution for a planar tool-use contact task.
+
+arm:
+  reuse_phase1_arm_config: true
+  source_config: configs/demo_planar_arm.yaml
+
+tool:
+  reuse_phase1_tool_config: true
+  source_config: configs/demo_planar_arm.yaml
+  default_grasp_name: short_inline
+
+task:
+  duration_s: 6.0
+  dt_s: 0.02
+  tangential_start_m: -0.4
+  tangential_end_m: 0.4
+  planned_surface_height_m: 0.0
+  desired_normal_force_n: 5.0
+  desired_tangential_speed_mps: 0.15
+
+surface:
+  type: sinusoidal
+  height_offset_m: 0.03
+  amplitude_m: 0.015
+  frequency_cycles_per_m: 2.0
+
+contact_model:
+  normal_stiffness_n_per_m: 400.0
+  normal_damping_n_s_per_m: 5.0
+  friction_coefficient: 0.4
+  max_penetration_m: 0.05
+
+controllers:
+  position_only:
+    kp_task: 40.0
+    kd_task: 8.0
+  force_aware:
+    kp_tangent: 40.0
+    kd_tangent: 8.0
+    force_gain_mps_per_n: 0.002
+    max_normal_correction_mps: 0.04
+    force_deadband_n: 0.2
+
+metrics:
+  contact_loss_force_threshold_n: 0.2
+  excessive_force_threshold_n: 12.0
+  contact_loss_fraction_threshold: 0.2
+  torque_warning_ratio: 0.9
+  torque_failure_ratio: 1.0
+  max_penetration_m: 0.05
+
+output:
+  figure_dir: media/figures
+  save_csv: false
+  csv_dir: media/phase3_logs

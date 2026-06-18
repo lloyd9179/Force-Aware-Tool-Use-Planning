@@ -1,7 +1,9 @@
-# Force-Aware Tool-Use Planning
+# Force-Aware Tool-Use Planning and Execution
 
 Geometry-only planning can find a reachable path, but the required task wrench may exceed joint torque limits.
-This repo demonstrates a minimal force-aware planner that avoids geometrically valid but physically infeasible tool-use motions.
+This repo demonstrates a minimal force-aware planner and execution-oriented
+visualization pipeline for tool-use motions that are geometrically valid but
+physically constrained.
 
 A robot configuration may follow a desired tool path while requiring joint
 torques beyond the robot's limits. This project compares a geometric baseline
@@ -82,6 +84,8 @@ maximum torque ratio of `0.875`.
 - Generate deterministic path, torque, and filtering figures.
 - Run the planner independently of ROS2.
 - Build the ROS2 package used for execution and RViz integration.
+- Plan the next contact-constrained execution phase without changing the
+  completed Phase 1 planner or Phase 2 mock-control demo.
 
 ## Quick Start
 
@@ -195,20 +199,35 @@ above the XY plane so overlapping paths remain visible.
 Implementation status and the ROS2 integration roadmap are maintained in the
 project status document linked below.
 
+## Phase 3 Roadmap
+
+Phase 3 is planned as contact-constrained tool-use execution. It will add a
+simplified 2D tool-surface contact model and compare position-only execution
+with force-aware feedback execution.
+
+The purpose is to show that a planned tool-use trajectory may be geometrically
+reachable and torque-aware, but still perform poorly during execution if
+contact forces are ignored. The core Phase 3 simulation is expected to run
+without ROS2; ROS2/RViz remains a visualization and replay layer.
+
 ## Limitations
 
 The wrench is a simplified planar task wrench, and grasps are rigid planar
-transforms. The project does not currently model contact physics, grasp
+transforms. The implemented phases do not model full contact physics, grasp
 stability, gravity, full dynamics, real force control, or real robot execution.
 The ROS2 integration uses mock position execution and does not physically
-validate the planned wrench.
+validate the planned wrench. Planned Phase 3 contact execution remains a
+simplified deterministic model, not Gazebo physics, impedance control, or
+hardware validation.
 
 ## Documentation
 
 - [Project status, repository structure, and roadmap](docs/PROJECT_STATUS.md)
 - [Purpose of each executable and launch file](docs/EXECUTABLES_AND_LAUNCH_FILES.md)
+- [Phase 3 contact execution design notes](docs/PHASE3_CONTACT_EXECUTION.md)
 - [Phase 1 implementation instructions](.agents/skills/force-aware-tool-use/PHASE1_INSTRUCTIONS.md)
 - [Phase 2 implementation plan and status](.agents/skills/force-aware-tool-use/PHASE2_INSTRUCTIONS.md)
+- [Phase 3 implementation plan](.agents/skills/force-aware-tool-use/PHASE3_INSTRUCTIONS.md)
 
 ## License
 

@@ -2,8 +2,9 @@
 
 ## Authoritative Instructions
 
-The repository contains a completed Phase 1 planner and an incremental Phase 2
-ROS2/RViz/ros2_control integration.
+The repository contains a completed Phase 1 planner, a completed Phase 2
+ROS2/RViz/ros2_control integration, and an incremental Phase 3
+contact-constrained execution plan.
 
 For every Phase 1 implementation, review, or documentation task:
 
@@ -23,6 +24,18 @@ For every Phase 2 implementation, review, or documentation task:
    RViz, and ros2_control integration.
 4. Preserve the completed Phase 1 behavior and follow
    `PHASE1_INSTRUCTIONS.md` for any Phase 1 code touched by Phase 2 work.
+
+For every Phase 3 implementation, review, or documentation task:
+
+1. Use `.agents/skills/force-aware-tool-use/SKILL.md`.
+2. Read `.agents/skills/force-aware-tool-use/PHASE3_INSTRUCTIONS.md` before
+   making changes.
+3. Treat `PHASE3_INSTRUCTIONS.md` as the detailed source of truth for
+   contact-constrained execution, metrics, plotting, and ROS2/RViz
+   visualization.
+4. Preserve completed Phase 1 and Phase 2 behavior. Follow
+   `PHASE1_INSTRUCTIONS.md` or `PHASE2_INSTRUCTIONS.md` for any earlier-phase
+   code touched by Phase 3 work.
 
 All repository commands must use `python3`, never `python`.
 
@@ -50,17 +63,21 @@ alternative.
 
 ## Phase Scope
 
-Phase 1 is complete and remains the source of truth for planning. Phase 2 may
-add ROS2, RViz, robot_state_publisher, and ros2_control mock-hardware trajectory
-execution under `ros2_ws/`.
+Phase 1 is complete and remains the source of truth for planning. Phase 2 adds
+ROS2, RViz, robot_state_publisher, and ros2_control mock-hardware trajectory
+execution under `ros2_ws/`. Phase 3 may add a simplified deterministic 2D
+contact execution model, Python-only comparison scripts, and ROS2/RViz
+visualization wrappers.
 
-Do not add Gazebo, MoveIt, PyBullet, real hardware execution, physical contact
-simulation, force control, impedance control, fixture-aware planning,
-PDDLStream, full TAMP, 3D planning, 6D wrench planning, dynamics, gravity
-compensation, perception, reinforcement learning, or learned grasping.
+Do not add Gazebo, MoveIt, PyBullet, real hardware execution, full physical
+contact simulation, real force control, impedance control, fixture-aware
+planning, PDDLStream, full TAMP, 3D planning, 6D wrench planning, full
+rigid-body dynamics, gravity compensation, perception, reinforcement learning,
+or learned grasping.
 
 Phase 1 code must not depend on ROS2. Phase 2 must consume Phase 1 results
-without duplicating planner mathematics.
+without duplicating planner mathematics. Phase 3 core simulation must run
+without ROS2 and must reuse Phase 1 mathematics instead of duplicating them.
 
 ## Existing Code
 
@@ -119,6 +136,8 @@ Every transform function must document transform direction.
 - Keep `README.md` concise and reader-facing.
 - Record implementation status, checklists, repository structure, and roadmap
   changes in `docs/PROJECT_STATUS.md`.
+- After each edit, update the relevant docs in the same change when behavior,
+  commands, outputs, status, structure, or roadmap details change.
 
 ## Required Verification
 
@@ -137,7 +156,17 @@ python3 scripts/run_baseline_vs_force_aware.py
 
 Verify that generated figures are saved under `media/figures/`.
 
-After changing Phase 2 package files, source ROS2 Humble and build the package:
+After changing Phase 3 contact execution code, plotting, metrics, or demo
+scripts, run the relevant commands when those scripts exist:
+
+```bash
+python3 -m pytest -q
+python3 scripts/run_phase3_contact_demo.py
+python3 scripts/generate_phase3_figures.py
+```
+
+After changing Phase 2 or Phase 3 ROS2 package files, source ROS2 Humble and
+build the package:
 
 ```bash
 source /opt/ros/humble/setup.bash
@@ -156,6 +185,7 @@ When making code changes, summarize:
 - how to run it using `python3`;
 - what tests were run;
 - where figures were saved;
+- which docs were updated;
 - any known limitations.
 
 Keep summaries concrete and concise.

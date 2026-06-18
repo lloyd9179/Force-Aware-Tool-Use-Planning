@@ -124,16 +124,48 @@ Detailed small-step plan and live checklist:
 .agents/skills/force-aware-tool-use/PHASE2_INSTRUCTIONS.md
 ```
 
+### Phase 3: Contact-Constrained Tool-Use Execution
+
+Status: planned; Steps 1 through 6 complete.
+
+Planned:
+
+- [x] Phase 3 config shell and documentation shell;
+- [x] simplified 2D contact surface model and focused tests;
+- [x] simplified tool-tip contact model and focused tests;
+- [x] contact force estimation and existing planar-wrench torque utility check;
+- [x] position-only baseline execution controller and focused tests;
+- [x] force-aware feedback execution controller and focused tests;
+- Python-only execution simulation, metrics, and comparison plots;
+- ROS2/RViz visualization wrapper for replaying contact execution results;
+- focused tests for contact models, controllers, and metrics.
+
+Phase 3 must preserve completed Phase 1 planning behavior and completed Phase 2
+mock-control visualization behavior. Core Phase 3 simulation must run without
+ROS2; ROS2/RViz is only a visualization and replay layer.
+
+Detailed source of truth:
+
+```text
+.agents/skills/force-aware-tool-use/PHASE3_INSTRUCTIONS.md
+```
+
+Supporting design notes:
+
+```text
+docs/PHASE3_CONTACT_EXECUTION.md
+```
+
 ## Repository Structure
 
 ```text
 Force-Aware-Tool-Use-Planning/
-├── configs/                    # Deterministic planner scenario
+├── configs/                    # Phase 1 scenario and Phase 3 config shell
 ├── docs/                       # Status and project documentation
 ├── media/figures/              # Phase 1 figures and Phase 2 GIFs
 ├── scripts/                    # Runnable Phase 1 demos
 ├── src/force_tool_planning/    # Pure Python planning package
-├── tests/                      # Phase 1 tests
+├── tests/                      # Phase 1 tests and Phase 3 focused tests
 ├── ros2_ws/src/
 │   └── force_tool_planning_ros/ # Phase 2 ROS2 package
 └── .agents/skills/
@@ -145,12 +177,6 @@ and `ros2_ws/log/` are ignored by Git.
 
 ## Planned Phases
 
-### Phase 3: Simplified Force-Control-Inspired Execution
-
-- Add a simple feedforward torque term.
-- Compare planned torque demand with commanded torque.
-- Preserve the lightweight educational model.
-
 ### Phase 4: Fixture-Aware Strategy Planning
 
 - Add simplified fixture choices such as table friction, clamps, and weights.
@@ -160,7 +186,8 @@ and `ros2_ws/log/` are ignored by Git.
 ## Scope Boundaries
 
 The project intentionally avoids claiming physical force execution from the
-current planar model. Unless a later phase explicitly changes the scope, the
-project excludes Gazebo physics, MoveIt, real hardware drivers, contact
-simulation, full rigid-body dynamics, 3D planning, 6D wrench planning,
-perception, and learned control.
+current planar model. Phase 3 may add a simplified deterministic 2D contact
+execution model, but the project still excludes Gazebo physics, MoveIt, real
+hardware drivers, full physical contact simulation, real force or impedance
+control, full rigid-body dynamics, 3D planning, 6D wrench planning, perception,
+and learned control.
