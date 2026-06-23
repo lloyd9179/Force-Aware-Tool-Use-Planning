@@ -18,9 +18,9 @@ tool:
 task:
   duration_s: 6.0
   dt_s: 0.02
-  tangential_start_m: -0.4
-  tangential_end_m: 0.4
-  planned_surface_height_m: 0.0
+  tangential_start_m: 1.2
+  tangential_end_m: 1.7
+  planned_surface_height_m: 0.6
   desired_normal_force_n: 5.0
   desired_tangential_speed_mps: 0.15
 
@@ -39,10 +39,10 @@ contact_model:
 controllers:
   position_only:
     kp_task: 40.0
-    kd_task: 8.0
+    kd_task: 0.0
   force_aware:
     kp_tangent: 40.0
-    kd_tangent: 8.0
+    kd_tangent: 0.0
     force_gain_mps_per_n: 0.002
     max_normal_correction_mps: 0.04
     force_deadband_n: 0.2

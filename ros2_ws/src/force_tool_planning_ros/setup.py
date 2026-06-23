@@ -7,6 +7,7 @@ from setuptools import find_packages, setup
 package_name = "force_tool_planning_ros"
 phase1_source = Path(__file__).resolve().parents[3] / "src"
 phase1_config = join("..", "..", "..", "configs", "demo_planar_arm.yaml")
+phase3_config = join("..", "..", "..", "configs", "phase3_contact_execution.yaml")
 
 setup(
     name=package_name,
@@ -26,7 +27,9 @@ setup(
         ("share/" + package_name, ["package.xml"]),
         (
             join("share", package_name, "config"),
-            glob("config/*.rviz") + glob("config/*.yaml") + [phase1_config],
+            glob("config/*.rviz")
+            + glob("config/*.yaml")
+            + [phase1_config, phase3_config],
         ),
         (join("share", package_name, "launch"), glob("launch/*.launch.py")),
         (join("share", package_name, "urdf"), glob("urdf/*.xacro")),
@@ -51,6 +54,8 @@ setup(
             "force_tool_planning_ros.marker_publisher_node:main",
             "trajectory_sender_node = "
             "force_tool_planning_ros.trajectory_sender_node:main",
+            "contact_execution_demo_node = "
+            "force_tool_planning_ros.contact_execution_demo_node:main",
         ],
     },
 )

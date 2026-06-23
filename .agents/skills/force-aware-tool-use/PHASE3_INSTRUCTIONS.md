@@ -45,7 +45,7 @@ Phase 3 may add:
 - a simplified contact force estimate;
 - position-only and force-aware feedback controllers;
 - Python-only simulation, metrics, and plots;
-- ROS2/RViz replay or visualization wrappers.
+- ROS2/RViz live visualization wrappers around the Python simulation.
 
 Phase 3 must not add:
 
@@ -68,6 +68,9 @@ model for learning and research practice, not hardware validation.
 - Keep core Phase 3 simulation under `src/force_tool_planning/` and runnable
   without ROS2.
 - Keep ROS2 wrappers under `ros2_ws/src/force_tool_planning_ros/`.
+- ROS2 nodes may own simulator/controller objects and advance them from a ROS2
+  timer, but contact, controller, force, and metric computations must remain in
+  the pure-Python package.
 - Keep scripts runnable from the repository root.
 - Save deterministic Matplotlib figures under `media/figures/`.
 - Use dataclasses and typed public functions.
@@ -122,6 +125,7 @@ src/force_tool_planning/
 ├── simulation/
 │   ├── __init__.py
 │   ├── contact_execution_sim.py
+│   ├── contact_execution_stepper.py
 │   └── execution_result.py
 ├── analysis/
 │   ├── __init__.py
@@ -311,7 +315,9 @@ Implement `compare_controllers(config_path: str)` in
 `src/force_tool_planning/analysis/compare_execution.py`.
 
 It should load config, build both controllers, run both simulations, compute
-metrics, and return both results.
+metrics, and return both results. Keep reusable config/controller/simulator
+construction helpers in Python so the later ROS2 live node can share the same
+setup instead of duplicating Phase 3 logic.
 
 Implement plotting in `src/force_tool_planning/analysis/plot_contact_results.py`
 with Matplotlib only. Save these figures:
@@ -353,11 +359,14 @@ Controller: force_aware
 
 ## 11. ROS2/RViz Requirements
 
-Phase 3 ROS2 code is a visualization and replay wrapper only. The Python
-simulation must work without ROS2.
+Phase 3 ROS2 code is a live visualization wrapper around the pure-Python
+simulation. The Python simulation must work without ROS2.
 
 Add a launchable RViz demo under `ros2_ws/src/force_tool_planning_ros/` that can
-replay either controller result. It should show:
+run either controller mode from a ROS2 timer. The ROS2 node should instantiate
+the pure-Python surface, contact model, controller, simulator/stepper, and
+metrics code, advance one deterministic step per timer tick, and publish the
+current result to ROS2 topics and RViz markers. It should show:
 
 - robot and attached tool when existing Phase 2 visualization can be reused;
 - desired and actual tool-tip path;
@@ -366,6 +375,10 @@ replay either controller result. It should show:
 - controller mode and status text;
 - visual distinction between contact loss, excessive penetration, warning, and
   success states.
+
+The ROS2 wrapper must not reimplement contact, controller, force, or metric
+math. It may publish live marker arrays, text/status messages, numeric topics,
+and optional joint states if a tested Phase 1 IK/grasp adapter is used.
 
 Required launch:
 
@@ -395,27 +408,32 @@ Implement Phase 3 in small verified steps:
 - [x] Step 6: Implement force-aware controller and tests.
   - Add tangential tracking, normal-force correction, deadband, clamp, sign
     convention comments, and focused tests.
-- [ ] Step 7: Implement execution result dataclass.
+- [x] Step 7: Implement execution result dataclass.
   - Store time series for desired/actual tool-tip motion, force, penetration,
     contact state, torque, torque ratio, controller name, and metrics.
-- [ ] Step 8: Implement contact execution simulator.
+- [x] Step 8: Implement contact execution simulator.
   - Run both controller modes with a deterministic kinematic update and produce
     `ContactExecutionResult` without ROS2.
-- [ ] Step 9: Implement metrics and tests.
+- [x] Step 9: Implement metrics and tests.
   - Compute force RMSE, contact loss, max penetration, max torque ratio,
     violation counts, success, and failure reasons.
-- [ ] Step 10: Implement comparison pipeline and numeric script.
+- [x] Step 10: Implement comparison pipeline and numeric script.
   - Load config, run both controllers, compute metrics, and print a concise
     controller comparison.
-- [ ] Step 11: Implement plotting and figure script.
+  - Estimate execution-time torque after contact force is known by mapping the
+    current tool-tip state through the Phase 1 force-aware selected grasp,
+    selecting the IK branch closest to the previous or nearest Phase 1
+    reference configuration, and reusing the existing Phase 1 Jacobian and
+    torque utilities.
+- [x] Step 11: Implement plotting and figure script.
   - Generate the four required Matplotlib figures under `media/figures/`
     without ROS2.
-- [ ] Step 12: Implement main demo script.
+- [x] Step 12: Implement main demo script.
   - Run the full Phase 3 comparison, print metrics, save figures, and support
     a custom config path.
-- [ ] Step 13: Add ROS2/RViz replay wrapper.
-  - Replay position-only or force-aware results in RViz without moving core
-    simulation logic into ROS2.
+- [x] Step 13: Add ROS2/RViz live simulation wrapper.
+  - Run position-only or force-aware contact execution from a ROS2 timer and
+    publish live topics/markers without moving core simulation logic into ROS2.
 - [ ] Step 14: Update README, project status, executable docs, and Phase 3
   notes.
   - Finalize public usage, limitations, command references, result
@@ -471,7 +489,7 @@ Phase 3 is complete when:
 - force-aware execution improves normal-force tracking;
 - the four required figures are saved under `media/figures/`;
 - focused Phase 3 tests and `python3 -m pytest -q` pass;
-- ROS2/RViz replay launches when ROS2 Humble is available;
+- ROS2/RViz live simulation launches when ROS2 Humble is available;
 - README, project status, executable docs, and Phase 3 notes match the
   implemented behavior;
 - Phase 1 planner scripts and Phase 2 demos remain valid.

@@ -126,7 +126,7 @@ Detailed small-step plan and live checklist:
 
 ### Phase 3: Contact-Constrained Tool-Use Execution
 
-Status: planned; Steps 1 through 6 complete.
+Status: planned; Steps 1 through 13 complete.
 
 Planned:
 
@@ -136,13 +136,26 @@ Planned:
 - [x] contact force estimation and existing planar-wrench torque utility check;
 - [x] position-only baseline execution controller and focused tests;
 - [x] force-aware feedback execution controller and focused tests;
-- Python-only execution simulation, metrics, and comparison plots;
-- ROS2/RViz visualization wrapper for replaying contact execution results;
+- [x] structured contact execution result dataclass and focused tests;
+- [x] Python-only contact execution simulator and focused tests;
+- [x] contact execution metrics and focused tests;
+- [x] comparison pipeline, Phase 1-referenced torque estimation, and numeric
+  comparison script;
+- [x] comparison plots and figure generation script;
+- [x] main Phase 3 demo script that prints metrics and saves figures;
+- [x] ROS2/RViz live simulation wrapper for publishing contact execution
+  results;
 - focused tests for contact models, controllers, and metrics.
 
 Phase 3 must preserve completed Phase 1 planning behavior and completed Phase 2
 mock-control visualization behavior. Core Phase 3 simulation must run without
-ROS2; ROS2/RViz is only a visualization and replay layer.
+ROS2; ROS2/RViz is only a live visualization and publication layer around the
+pure-Python simulation.
+
+The default Phase 3 contact strip is configured in the forward Phase 1
+workspace region (`x=1.2 m` to `x=1.7 m`, planned surface height `y=0.6 m`)
+instead of crossing the `base_link` origin. This improves RViz readability but
+does not add collision detection.
 
 Detailed source of truth:
 
@@ -160,14 +173,14 @@ docs/PHASE3_CONTACT_EXECUTION.md
 
 ```text
 Force-Aware-Tool-Use-Planning/
-├── configs/                    # Phase 1 scenario and Phase 3 config shell
+├── configs/                    # Phase 1 scenario and Phase 3 comparison config
 ├── docs/                       # Status and project documentation
-├── media/figures/              # Phase 1 figures and Phase 2 GIFs
-├── scripts/                    # Runnable Phase 1 demos
-├── src/force_tool_planning/    # Pure Python planning package
+├── media/figures/              # Phase 1/Phase 3 figures and Phase 2 GIFs
+├── scripts/                    # Runnable Phase 1 demos and Phase 3 scripts
+├── src/force_tool_planning/    # Pure Python planning, contact, and analysis package
 ├── tests/                      # Phase 1 tests and Phase 3 focused tests
 ├── ros2_ws/src/
-│   └── force_tool_planning_ros/ # Phase 2 ROS2 package
+│   └── force_tool_planning_ros/ # Phase 2 and Phase 3 ROS2/RViz package
 └── .agents/skills/
     └── force-aware-tool-use/   # Phase-specific implementation instructions
 ```

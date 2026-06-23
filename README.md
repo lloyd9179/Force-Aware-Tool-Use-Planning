@@ -17,7 +17,13 @@ The baseline checks inverse kinematics and joint limits. The force-aware planner
 also rejects configurations that violate joint torque limits, then selects a
 smooth feasible trajectory.
 
-## Technical Overview
+## Phase 1-2: Planning and ROS2/RViz Execution
+
+Phase 1 implements the deterministic force-aware planner. Phase 2 replays and
+visualizes the selected trajectories in ROS2/RViz with ros2_control mock
+position execution.
+
+### Technical Overview
 
 The current planner uses:
 
@@ -41,7 +47,7 @@ tool path
 -> smooth path selection
 ```
 
-## Results
+### Results
 
 For the default deterministic scenario, the baseline selects a geometrically
 valid path with a maximum torque ratio of `1.314`, exceeding a joint limit. The
@@ -75,7 +81,7 @@ maximum torque ratio of `0.875`.
        width="55%">
 </p>
 
-## Capabilities
+### Capabilities
 
 - Compare geometric-only and force-aware planning.
 - Generate multiple IK branches for each grasp and waypoint.
@@ -87,7 +93,7 @@ maximum torque ratio of `0.875`.
 - Plan the next contact-constrained execution phase without changing the
   completed Phase 1 planner or Phase 2 mock-control demo.
 
-## Quick Start
+### Quick Start
 
 Requirements: Python 3, NumPy, Matplotlib, PyYAML, and pytest.
 
@@ -118,7 +124,7 @@ python3 scripts/run_baseline_vs_force_aware.py --config path/to/config.yaml
 The default scenario is defined in
 [`configs/demo_planar_arm.yaml`](configs/demo_planar_arm.yaml).
 
-## ROS2 Package
+### ROS2 Package
 
 Phase 2 is complete and uses ROS2 Humble in a separate workspace so the
 planning package remains independent of ROS2:
@@ -173,7 +179,7 @@ Final verification completed with `58` Phase 1 tests and `34` ROS2 package
 tests passing with no failures. Both complete demos were also verified live
 through their final selected joint waypoints.
 
-### How to Read the RViz Display
+#### How to Read the RViz Display
 
 RViz shows two different kinds of visuals:
 
@@ -199,16 +205,43 @@ above the XY plane so overlapping paths remain visible.
 Implementation status and the ROS2 integration roadmap are maintained in the
 project status document linked below.
 
-## Phase 3 Roadmap
+## Phase 3: Contact-Constrained Execution
 
-Phase 3 is planned as contact-constrained tool-use execution. It will add a
-simplified 2D tool-surface contact model and compare position-only execution
+The next layer asks what happens after a torque-feasible tool path is selected:
+can execution maintain useful contact with a surface? This phase adds a
+simplified deterministic 2D contact task and compares position-only execution
 with force-aware feedback execution.
 
-The purpose is to show that a planned tool-use trajectory may be geometrically
-reachable and torque-aware, but still perform poorly during execution if
-contact forces are ignored. The core Phase 3 simulation is expected to run
-without ROS2; ROS2/RViz remains a visualization and replay layer.
+The purpose is to show that a planned trajectory may be geometrically reachable
+and torque-aware, but still perform poorly during execution if contact forces
+are ignored. The core Phase 3 simulation runs without ROS2; ROS2/RViz remains
+a live visualization and publication layer around the Python simulation.
+
+Current Phase 3 status:
+
+- implemented: config shell, surface model, contact model, force estimator,
+  position-only controller, force-aware controller, and execution result
+  container, contact execution simulator, metrics, comparison pipeline, Phase
+  1-referenced torque estimation, numeric comparison script, plots, and figure
+  generation script, main demo script, and ROS2/RViz live simulation wrapper;
+- pending: final Phase 3 documentation/status cleanup.
+
+Run the Python-only contact execution demo:
+
+```bash
+python3 scripts/run_phase3_contact_demo.py
+```
+
+Run the live RViz wrapper after building and sourcing the ROS2 workspace:
+
+```bash
+ros2 launch force_tool_planning_ros phase3_contact_execution.launch.py controller_mode:=force_aware
+```
+
+Use `controller_mode:=position_only` for the baseline contact-execution view.
+The default contact strip is placed forward of the base in the Phase 1
+workspace region, so the live surface marker and tool-tip motion are not
+centered on the `base_link` visual.
 
 ## Limitations
 
@@ -216,9 +249,9 @@ The wrench is a simplified planar task wrench, and grasps are rigid planar
 transforms. The implemented phases do not model full contact physics, grasp
 stability, gravity, full dynamics, real force control, or real robot execution.
 The ROS2 integration uses mock position execution and does not physically
-validate the planned wrench. Planned Phase 3 contact execution remains a
-simplified deterministic model, not Gazebo physics, impedance control, or
-hardware validation.
+validate the planned wrench. Phase 3 contact execution remains a simplified
+deterministic model and live visualization wrapper, not Gazebo physics,
+impedance control, or hardware validation.
 
 ## Documentation
 
