@@ -1,6 +1,6 @@
 # Phase 3 Contact-Constrained Tool-Use Execution
 
-Phase 3 is in progress.
+Phase 3 is complete.
 Step 1 is complete: the Phase 3 config shell exists at
 `configs/phase3_contact_execution.yaml`, this notes file exists, README mentions
 the Phase 3 roadmap, and project status tracks Phase 3.
@@ -28,6 +28,8 @@ summaries and saves the required figures.
 Step 13 is complete: the ROS2/RViz live wrapper advances the shared
 pure-Python contact execution stepper from a timer and publishes live markers,
 status, numeric topics, and joint states.
+Step 14 is complete: README, project status, executable docs, Phase 3 notes,
+and the Phase 3 instruction checklist match the implemented behavior.
 
 The goal is to extend the completed force-aware planning demo into a simplified
 execution comparison:
@@ -38,9 +40,10 @@ vs.
 force-aware contact execution
 ```
 
-The demo should show that a trajectory can be geometrically reachable and
-torque-aware in planning, yet still perform poorly during execution when
-contact forces are ignored.
+The demo shows that a nominal trajectory can be geometrically reachable and
+torque-aware in planning, yet still perform poorly during execution when the
+real contact surface differs from the assumed geometry and contact forces are
+ignored.
 
 ## Scope
 
@@ -136,9 +139,13 @@ config by default and accept a custom config path from scripts.
 
 The default contact task is placed in the same forward workspace region as the
 Phase 1 tool-use path: tangential motion runs from `x=1.2 m` to `x=1.7 m`
-around a planned surface height of `y=0.6 m`. This keeps the Phase 3 contact
-surface away from the `base_link` visual while preserving the same simplified
-contact comparison. The project still does not perform collision detection.
+around a planned surface height of `y=0.6 m`. The desired tool-tip trajectory
+uses this nominal straight contact line. The actual surface is configured as a
+sinusoidal height field with offset and amplitude error, representing imperfect
+surface geometry knowledge rather than a perfectly known surface. This keeps
+the Phase 3 contact surface away from the `base_link` visual while preserving
+the simplified contact comparison. The project still does not perform
+collision detection.
 
 ## Implemented Surface Model
 
@@ -146,6 +153,15 @@ contact comparison. The project still does not perform collision detection.
 deterministic height-field surface model for Phase 3. It supports flat and
 sinusoidal surfaces, returns height in meters, and provides unit tangent and
 normal vectors. The normal points away from the surface into free space.
+
+The default demo uses:
+
+```text
+y_surface(x) = planned_height + offset + amplitude * sin(2*pi*frequency*x)
+```
+
+This intentionally differs from the nominal straight desired path so the
+controllers must handle surface-geometry error during contact execution.
 
 Focused tests live in `tests/test_surface.py`.
 
@@ -194,8 +210,9 @@ desired_vel + kp_task * position_error + kd_task * velocity_error
 ```
 
 The controller intentionally has no force-feedback inputs. It tracks desired
-tool-tip position and velocity only, so future Phase 3 comparisons can isolate
-the effect of force-aware feedback.
+tool-tip position and velocity only. In the default demo it follows the nominal
+straight-line geometry, so contact quality can degrade when the actual surface
+differs from that assumed geometry.
 
 Focused tests live in `tests/test_position_controller.py`.
 
@@ -218,6 +235,10 @@ positive normal correction moves opposite the surface normal, into contact
 The controller applies a normal-force deadband and clamps the normal correction
 with `max_normal_correction_mps`. Focused tests live in
 `tests/test_force_aware_controller.py`.
+
+This lets the actual tool-tip motion deviate from the nominal geometric path
+when the measured force is too low or too high, which is the intended contrast
+with the position-only baseline.
 
 ## Implemented Execution Result Container
 

@@ -126,9 +126,9 @@ Detailed small-step plan and live checklist:
 
 ### Phase 3: Contact-Constrained Tool-Use Execution
 
-Status: planned; Steps 1 through 13 complete.
+Status: complete.
 
-Planned:
+Completed:
 
 - [x] Phase 3 config shell and documentation shell;
 - [x] simplified 2D contact surface model and focused tests;
@@ -145,7 +145,10 @@ Planned:
 - [x] main Phase 3 demo script that prints metrics and saves figures;
 - [x] ROS2/RViz live simulation wrapper for publishing contact execution
   results;
-- focused tests for contact models, controllers, and metrics.
+- [x] README, project status, executable docs, Phase 3 notes, and Phase 3
+  checklist synchronized with the implemented behavior;
+- [x] focused tests for contact models, controllers, metrics, scripts, plots,
+  and ROS2 wrapper helpers.
 
 Phase 3 must preserve completed Phase 1 planning behavior and completed Phase 2
 mock-control visualization behavior. Core Phase 3 simulation must run without
@@ -153,9 +156,21 @@ ROS2; ROS2/RViz is only a live visualization and publication layer around the
 pure-Python simulation.
 
 The default Phase 3 contact strip is configured in the forward Phase 1
-workspace region (`x=1.2 m` to `x=1.7 m`, planned surface height `y=0.6 m`)
-instead of crossing the `base_link` origin. This improves RViz readability but
-does not add collision detection.
+workspace region (`x=1.2 m` to `x=1.7 m`, planned surface height `y=0.6 m`).
+The nominal desired path assumes this simple contact line, while the actual
+surface is a deterministic sinusoidal height field with offset and amplitude
+error. Position-only execution follows the nominal geometry and fails under
+that contact uncertainty; force-aware feedback uses measured normal force to
+reduce the contact failure modes and succeeds in the default comparison.
+
+Final Phase 3 media:
+
+```text
+media/figures/phase3_tool_tip_trajectory.png
+media/figures/phase3_force_tracking.png
+media/figures/phase3_contact_state.png
+media/figures/phase3_torque_ratio.png
+```
 
 Detailed source of truth:
 

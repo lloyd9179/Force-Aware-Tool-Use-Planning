@@ -1,13 +1,13 @@
 # Force-Aware Tool-Use Planning and Execution
 
-Geometry-only planning can find a reachable path, but the required task wrench may exceed joint torque limits.
-This repo demonstrates a minimal force-aware planner and execution-oriented
-visualization pipeline for tool-use motions that are geometrically valid but
-physically constrained.
+Geometry-only planning can find a reachable path, but tool use also depends on
+wrench feasibility, torque limits, and contact forces. This repo demonstrates a
+minimal three-phase force-aware tool-use pipeline: planar planning, ROS2/RViz
+mock execution, and simplified contact-constrained execution.
 
-A robot configuration may follow a desired tool path while requiring joint
-torques beyond the robot's limits. This project compares a geometric baseline
-planner with a force-aware planner that evaluates the desired planar wrench:
+In planning, a robot configuration may follow a desired tool path while
+requiring joint torques beyond the robot's limits. The force-aware planner
+evaluates the desired planar wrench:
 
 ```text
 tau = J(q).T @ F
@@ -69,17 +69,22 @@ maximum torque ratio of `0.875`.
   </tr>
 </table>
 
-<p align="center">
-  <img src="media/figures/baseline_vs_force_aware_paths.png"
-       alt="Baseline and force-aware selected arm paths"
-       width="95%">
-</p>
-
-<p align="center">
-  <img src="media/figures/torque_profiles.png"
-       alt="Baseline and force-aware joint torque profiles"
-       width="55%">
-</p>
+<table>
+  <tr>
+    <th>Selected Arm Paths</th>
+    <th>Joint Torque Profiles</th>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><img
+        src="media/figures/baseline_vs_force_aware_paths.png"
+        alt="Baseline and force-aware selected arm paths"
+        width="96%"></td>
+    <td width="50%" align="center"><img
+        src="media/figures/torque_profiles.png"
+        alt="Baseline and force-aware joint torque profiles"
+        width="88%"></td>
+  </tr>
+</table>
 
 ### Capabilities
 
@@ -90,7 +95,7 @@ maximum torque ratio of `0.875`.
 - Generate deterministic path, torque, and filtering figures.
 - Run the planner independently of ROS2.
 - Build the ROS2 package used for execution and RViz integration.
-- Plan the next contact-constrained execution phase without changing the
+- Run the contact-constrained execution comparison without changing the
   completed Phase 1 planner or Phase 2 mock-control demo.
 
 ### Quick Start
@@ -202,8 +207,8 @@ paths because each planner selects a grasp transform between the robot end
 effector and the tool tip. The markers are drawn at slightly different heights
 above the XY plane so overlapping paths remain visible.
 
-Implementation status and the ROS2 integration roadmap are maintained in the
-project status document linked below.
+Implementation status, repository structure, and remaining roadmap items are
+maintained in the project status document linked below.
 
 ## Phase 3: Contact-Constrained Execution
 
@@ -212,19 +217,74 @@ can execution maintain useful contact with a surface? This phase adds a
 simplified deterministic 2D contact task and compares position-only execution
 with force-aware feedback execution.
 
-The purpose is to show that a planned trajectory may be geometrically reachable
-and torque-aware, but still perform poorly during execution if contact forces
-are ignored. The core Phase 3 simulation runs without ROS2; ROS2/RViz remains
-a live visualization and publication layer around the Python simulation.
+In real tool-use tasks, the robot rarely knows the exact surface geometry. A
+planned path may assume a simple contact line, but the real surface can be
+offset or curved relative to that nominal model. Phase 3 uses that mismatch to
+compare position-only execution against force-aware feedback: the position-only
+controller follows the nominal geometric path and can over-penetrate, track
+force poorly, or exceed torque limits, while the force-aware controller uses
+measured contact force to correct the motion and maintain a more successful
+contact interaction.
 
-Current Phase 3 status:
+The default contact surface is a deterministic height field:
 
-- implemented: config shell, surface model, contact model, force estimator,
-  position-only controller, force-aware controller, and execution result
-  container, contact execution simulator, metrics, comparison pipeline, Phase
-  1-referenced torque estimation, numeric comparison script, plots, and figure
-  generation script, main demo script, and ROS2/RViz live simulation wrapper;
-- pending: final Phase 3 documentation/status cleanup.
+```text
+y_surface(x) = planned_height + offset + amplitude * sin(2*pi*frequency*x)
+penetration = y_surface(x) - y_tool_tip
+normal_force = max(0, stiffness * penetration - damping * normal_velocity)
+```
+
+The position-only controller commands tool-tip velocity from geometry alone:
+
+```text
+u = v_des + kp * (p_des - p_actual) + kd * (v_des - v_actual)
+```
+
+The force-aware controller tracks tangential motion while adding a bounded
+normal correction from force error:
+
+```text
+force_error = F_des - F_measured
+u = u_tangent - clamp(k_force * deadband(force_error)) * surface_normal
+```
+
+The core Phase 3 simulation runs without ROS2; ROS2/RViz remains a live
+visualization and publication layer around the Python simulation.
+
+Phase 3 includes the config, surface/contact model, force
+estimator, position-only and force-aware controllers, simulator, metrics,
+comparison scripts, figures, main demo, and ROS2/RViz live wrapper.
+
+<table>
+  <tr>
+    <th>Tool-Tip Trajectory</th>
+    <th>Normal-Force Tracking</th>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><img
+        src="media/figures/phase3_tool_tip_trajectory.png"
+        alt="Phase 3 desired and actual tool-tip trajectories"
+        width="94%"></td>
+    <td width="50%" align="center"><img
+        src="media/figures/phase3_force_tracking.png"
+        alt="Phase 3 desired and measured normal force"
+        width="94%"></td>
+  </tr>
+  <tr>
+    <th>Contact State and Penetration</th>
+    <th>Torque Ratio</th>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><img
+        src="media/figures/phase3_contact_state.png"
+        alt="Phase 3 contact state and penetration"
+        width="94%"></td>
+    <td width="50%" align="center"><img
+        src="media/figures/phase3_torque_ratio.png"
+        alt="Phase 3 torque-limit ratio"
+        width="94%"></td>
+  </tr>
+</table>
 
 Run the Python-only contact execution demo:
 
@@ -260,7 +320,7 @@ impedance control, or hardware validation.
 - [Phase 3 contact execution design notes](docs/PHASE3_CONTACT_EXECUTION.md)
 - [Phase 1 implementation instructions](.agents/skills/force-aware-tool-use/PHASE1_INSTRUCTIONS.md)
 - [Phase 2 implementation plan and status](.agents/skills/force-aware-tool-use/PHASE2_INSTRUCTIONS.md)
-- [Phase 3 implementation plan](.agents/skills/force-aware-tool-use/PHASE3_INSTRUCTIONS.md)
+- [Phase 3 implementation instructions and completion checklist](.agents/skills/force-aware-tool-use/PHASE3_INSTRUCTIONS.md)
 
 ## License
 

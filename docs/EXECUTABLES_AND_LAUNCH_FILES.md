@@ -76,6 +76,11 @@ tool-tip motion are not centered on the `base_link` visual.
 The saved Phase 3 RViz view is focused near `(x=1.45 m, y=0.6 m)` to frame
 that contact strip by default.
 
+The desired Phase 3 tool-tip path is the nominal geometry assumed by the task.
+The actual contact surface is a deterministic sinusoidal height field with
+offset and amplitude error, so the Phase 3 demos compare blindly following the
+nominal geometry with using measured contact force to correct execution.
+
 Phase 3 live topics:
 
 | Topic | Type | Purpose |

@@ -21,18 +21,20 @@ vs.
 force-aware contact execution
 ```
 
-The demo should show that a tool path can be geometrically reachable and
-torque-aware in planning, but still perform poorly during execution when
-contact forces are ignored.
+The demo should show that a nominal tool path can be geometrically reachable
+and torque-aware in planning, but still perform poorly during execution when
+the real contact surface differs from the assumed geometry and contact forces
+are ignored.
 
 The final Phase 3 story is:
 
 ```text
-same planned tool-tip path and contact task
--> position-only execution loses contact, over-penetrates, tracks force poorly,
-   or approaches torque limits under surface uncertainty
--> force-aware feedback execution improves normal-force tracking and reduces
-   contact-related failure modes
+same nominal tool-tip path and contact task
+-> actual surface geometry differs from the assumed straight contact line
+-> position-only execution follows nominal geometry and over-penetrates,
+   tracks force poorly, or exceeds torque limits
+-> force-aware feedback uses measured normal force to correct execution and
+   reduce contact-related failure modes
 ```
 
 ## 2. Non-Negotiable Scope
@@ -434,7 +436,7 @@ Implement Phase 3 in small verified steps:
 - [x] Step 13: Add ROS2/RViz live simulation wrapper.
   - Run position-only or force-aware contact execution from a ROS2 timer and
     publish live topics/markers without moving core simulation logic into ROS2.
-- [ ] Step 14: Update README, project status, executable docs, and Phase 3
+- [x] Step 14: Update README, project status, executable docs, and Phase 3
   notes.
   - Finalize public usage, limitations, command references, result
     interpretation, and checklist status after the implementation changes.
