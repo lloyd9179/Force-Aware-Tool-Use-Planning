@@ -1,8 +1,8 @@
 # Project Status and Roadmap
 
 This document tracks implementation status, repository organization, and
-planned phases. The public-facing project summary and usage instructions remain
-in the repository `README.md`.
+roadmap boundaries. The public-facing project summary and usage instructions
+remain in the repository `README.md`.
 
 ## Current Status
 
@@ -150,9 +150,9 @@ Completed:
 - [x] focused tests for contact models, controllers, metrics, scripts, plots,
   and ROS2 wrapper helpers.
 
-Phase 3 must preserve completed Phase 1 planning behavior and completed Phase 2
-mock-control visualization behavior. Core Phase 3 simulation must run without
-ROS2; ROS2/RViz is only a live visualization and publication layer around the
+Phase 3 preserves completed Phase 1 planning behavior and completed Phase 2
+mock-control visualization behavior. Core Phase 3 simulation runs without ROS2;
+ROS2/RViz is only a live visualization and publication layer around the
 pure-Python simulation.
 
 The default Phase 3 contact strip is configured in the forward Phase 1
@@ -203,19 +203,12 @@ Force-Aware-Tool-Use-Planning/
 Generated ROS2 workspace outputs under `ros2_ws/build/`, `ros2_ws/install/`,
 and `ros2_ws/log/` are ignored by Git.
 
-## Planned Phases
-
-### Phase 4: Fixture-Aware Strategy Planning
-
-- Add simplified fixture choices such as table friction, clamps, and weights.
-- Compare geometric-only, torque-aware, and fixture-aware strategies.
-- Evaluate robustness under parameter perturbations.
-
 ## Scope Boundaries
 
-The project intentionally avoids claiming physical force execution from the
-current planar model. Phase 3 may add a simplified deterministic 2D contact
-execution model, but the project still excludes Gazebo physics, MoveIt, real
-hardware drivers, full physical contact simulation, real force or impedance
-control, full rigid-body dynamics, 3D planning, 6D wrench planning, perception,
-and learned control.
+The project is a completed simplified deterministic implementation, not a
+hardware-validation stack. It intentionally avoids claiming physical force
+execution from the current planar model. The implemented Phase 3 contact model
+is a simplified deterministic 2D comparison, and the project still excludes
+Gazebo physics, MoveIt, real hardware drivers, full physical contact
+simulation, real force or impedance control, full rigid-body dynamics, 3D
+planning, 6D wrench planning, perception, and learned control.

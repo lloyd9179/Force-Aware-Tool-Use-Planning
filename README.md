@@ -1,17 +1,17 @@
 # Force-Aware Tool-Use Planning and Execution
 
 Geometry-only planning can find a reachable path, but tool use also depends on
-wrench feasibility, torque limits, and contact forces. This repo demonstrates a
-minimal three-phase force-aware tool-use pipeline: planar planning, ROS2/RViz
-mock execution, and simplified contact-constrained execution.
+wrench feasibility, torque limits, and contact forces. This repo is a simplified deterministic implementation of a three-phase force-aware tool-use
+pipeline: planar planning, ROS2/RViz mock execution, and contact-constrained
+execution.
 
 In planning, a robot configuration may follow a desired tool path while
 requiring joint torques beyond the robot's limits. The force-aware planner
 evaluates the desired planar wrench:
 
-```text
-tau = J(q).T @ F
-```
+$$
+\tau = J(q)^\top F
+$$
 
 The baseline checks inverse kinematics and joint limits. The force-aware planner
 also rejects configurations that violate joint torque limits, then selects a
@@ -28,7 +28,7 @@ position execution.
 The current planner uses:
 
 - a planar 3-link revolute arm;
-- planar poses `[x, y, theta]`;
+- planar poses $[x, y, \theta]$;
 - candidate rigid grasp transforms;
 - deterministic analytic inverse kinematics;
 - joint-limit and torque-limit filtering;
@@ -207,7 +207,7 @@ paths because each planner selects a grasp transform between the robot end
 effector and the tool tip. The markers are drawn at slightly different heights
 above the XY plane so overlapping paths remain visible.
 
-Implementation status, repository structure, and remaining roadmap items are
+Implementation status, repository structure, and scope boundaries are
 maintained in the project status document linked below.
 
 ## Phase 3: Contact-Constrained Execution
@@ -228,25 +228,45 @@ contact interaction.
 
 The default contact surface is a deterministic height field:
 
-```text
-y_surface(x) = planned_height + offset + amplitude * sin(2*pi*frequency*x)
-penetration = y_surface(x) - y_tool_tip
-normal_force = max(0, stiffness * penetration - damping * normal_velocity)
-```
+$$
+y_{\mathrm{surface}}(x)
+= y_{\mathrm{planned}} + y_{\mathrm{offset}}
++ A \sin(2 \pi f x)
+$$
+
+$$
+d_{\mathrm{pen}} = y_{\mathrm{surface}}(x) - y_{\mathrm{tool\ tip}}
+$$
+
+$$
+F_n = \max\left(0,\ k_n d_{\mathrm{pen}} - c_n v_n\right)
+$$
 
 The position-only controller commands tool-tip velocity from geometry alone:
 
-```text
-u = v_des + kp * (p_des - p_actual) + kd * (v_des - v_actual)
-```
+$$
+u = v_{\mathrm{des}}
++ k_p \left(p_{\mathrm{des}} - p_{\mathrm{actual}}\right)
++ k_d \left(v_{\mathrm{des}} - v_{\mathrm{actual}}\right)
+$$
 
 The force-aware controller tracks tangential motion while adding a bounded
 normal correction from force error:
 
-```text
-force_error = F_des - F_measured
-u = u_tangent - clamp(k_force * deadband(force_error)) * surface_normal
-```
+$$
+e_F = F_{\mathrm{des}} - F_{\mathrm{measured}}
+$$
+
+$$
+\Delta v_n
+= \operatorname{clamp}\left(
+    k_F\,\operatorname{deadband}(e_F)
+  \right)
+$$
+
+$$
+u = u_{\mathrm{tangent}} - \Delta v_n\,n_{\mathrm{surface}}
+$$
 
 The core Phase 3 simulation runs without ROS2; ROS2/RViz remains a live
 visualization and publication layer around the Python simulation.
@@ -305,11 +325,13 @@ centered on the `base_link` visual.
 
 ## Limitations
 
-The wrench is a simplified planar task wrench, and grasps are rigid planar
-transforms. The implemented phases do not model full contact physics, grasp
+- The wrench is a simplified planar task wrench, and grasps are rigid planar
+transforms.
+- The implemented phases do not model full contact physics, grasp
 stability, gravity, full dynamics, real force control, or real robot execution.
-The ROS2 integration uses mock position execution and does not physically
-validate the planned wrench. Phase 3 contact execution remains a simplified
+- The ROS2 integration uses mock position execution and does not physically
+validate the planned wrench.
+- Phase 3 contact execution remains a simplified
 deterministic model and live visualization wrapper, not Gazebo physics,
 impedance control, or hardware validation.
 

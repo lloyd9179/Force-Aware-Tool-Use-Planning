@@ -1,38 +1,7 @@
 # Phase 3 Contact-Constrained Tool-Use Execution
 
-Phase 3 is complete.
-Step 1 is complete: the Phase 3 config shell exists at
-`configs/phase3_contact_execution.yaml`, this notes file exists, README mentions
-the Phase 3 roadmap, and project status tracks Phase 3.
-Step 2 is complete: the `Surface2D` model and focused surface tests exist.
-Step 3 is complete: the simplified `PlanarContactModel` and focused contact
-model tests exist.
-Step 4 is complete: the contact force estimator exists and connects directly to
-the existing Phase 1 planar-wrench torque utility.
-Step 5 is complete: the position-only baseline controller and focused tests
-exist.
-Step 6 is complete: the force-aware feedback controller and focused tests
-exist.
-Step 7 is complete: the structured contact execution result dataclass and
-focused tests exist.
-Step 8 is complete: the deterministic Python-only contact execution simulator
-and focused tests exist.
-Step 9 is complete: contact execution metrics and focused tests exist.
-Step 10 is complete: the comparison pipeline and numeric comparison script
-exist, including execution-time torque estimates that reuse the Phase 1
-force-aware plan as the IK branch reference.
-Step 11 is complete: the Matplotlib plotting helpers and figure generation
-script save the four required Phase 3 figures.
-Step 12 is complete: the main Phase 3 demo script prints both controller
-summaries and saves the required figures.
-Step 13 is complete: the ROS2/RViz live wrapper advances the shared
-pure-Python contact execution stepper from a timer and publishes live markers,
-status, numeric topics, and joint states.
-Step 14 is complete: README, project status, executable docs, Phase 3 notes,
-and the Phase 3 instruction checklist match the implemented behavior.
-
-The goal is to extend the completed force-aware planning demo into a simplified
-execution comparison:
+Phase 3 is complete. It extends the completed force-aware planning demo into a
+completed simplified deterministic execution comparison:
 
 ```text
 position-only execution
@@ -47,15 +16,14 @@ ignored.
 
 ## Scope
 
-Phase 3 should add a deterministic 2D tool-surface contact model, a tool-tip
+Phase 3 implements a deterministic 2D tool-surface contact model, a tool-tip
 contact force estimate, position-only and force-aware feedback controllers,
 execution metrics, comparison plots, and an RViz live visualization wrapper.
 
-The core simulation must remain pure Python and must run without ROS2. ROS2 and
-RViz should visualize generated results or publish live simulation state from a
-timer-driven wrapper node.
+The core simulation remains pure Python and runs without ROS2. ROS2 and RViz
+publish live simulation state from a timer-driven wrapper node.
 
-Core Phase 3 modules should extend the existing package under
+Core Phase 3 modules extend the existing package under
 `src/force_tool_planning/`, for example `contact/`, `control/`, `simulation/`,
 and `analysis/` subpackages. Do not create parallel top-level import roots such
 as `src/contact` or duplicate Phase 1 kinematics and torque code.
@@ -74,7 +42,7 @@ media/figures/phase3_contact_state.png
 media/figures/phase3_torque_ratio.png
 ```
 
-The main demo should print metrics for both controllers, including force RMSE,
+The main demo prints metrics for both controllers, including force RMSE,
 contact loss fraction, max penetration, max torque ratio, success, and failure
 reasons.
 
@@ -134,8 +102,8 @@ configs/phase3_contact_execution.yaml
 ```
 
 It references the existing Phase 1 scenario in `configs/demo_planar_arm.yaml`
-for arm, torque-limit, and grasp data. Phase 3 implementations should load this
-config by default and accept a custom config path from scripts.
+for arm, torque-limit, and grasp data. Phase 3 scripts load this config by
+default and accept a custom config path.
 
 The default contact task is placed in the same forward workspace region as the
 Phase 1 tool-use path: tangential motion runs from `x=1.2 m` to `x=1.7 m`

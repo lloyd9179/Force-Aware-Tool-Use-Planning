@@ -1,8 +1,9 @@
 # Executables and Launch Files
 
-The repository keeps the public command surface small while separating planning,
-ROS messages, nodes, and launch wiring into testable files. Most Python modules
-are support code and are not intended to be run directly.
+The repository is a simplified deterministic implementation with a
+small public command surface. Planning, ROS messages, nodes, and launch wiring
+are separated into testable files. Most Python modules are support code and are
+not intended to be run directly.
 
 ## Recommended Demo Commands
 
